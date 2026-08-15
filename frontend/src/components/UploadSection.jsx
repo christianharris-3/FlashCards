@@ -4,7 +4,7 @@ import {AttachFile, UploadFile} from "@mui/icons-material";
 import {getHeaders} from "../utils/utils.js";
 import {useDropzone} from "react-dropzone";
 
-export default function CollectionSection({triggerDataReload, ...props}) {
+export default function UploadSection({triggerDataReload, ...props}) {
     const [zipFile, setZipFile] = useState(null);
     const [fileProcessing, setFileProcessing] = useState(false);
     const [fileProcessed, setFileProcessed] = useState(false);

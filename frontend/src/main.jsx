@@ -3,11 +3,12 @@ import { createRoot } from 'react-dom/client'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import Layout from "./Layout.jsx";
 import Home from "./pages/Home.jsx";
-import Collection from "./pages/Upload.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
-import TablePage from "./pages/TablePage.jsx";
+import Collections from "./pages/Collections.jsx";
+import ViewCollection from "./pages/ViewCollection.jsx";
+import LearnPage from "./pages/learnPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -15,11 +16,12 @@ const router = createBrowserRouter([
         element: <Layout/>,
         children: [
             {path: "/", element: <Home />},
-            {path: "/collection", element: <Collection />},
             {path: "/login", element: <Login />},
             {path: "/register", element: <Register />},
             {path: "/profile", element: <Profile />},
-            {path: "/table", element: <TablePage />}
+            {path: "/collections", element: <Collections />},
+            {path: "/collections/:collectionId", element: <ViewCollection />},
+            {path: "/learn", element: <LearnPage />}
         ]
     }
 ])

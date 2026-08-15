@@ -12,7 +12,7 @@ import {
 import UserAvatar from "../components/UserAvatar.jsx";
 import {getHeaders, logout} from "../utils/utils.js";
 import {useNavigate} from "react-router-dom";
-import CollectionSection from "../components/CollectionSection.jsx";
+import UploadSection from "../components/UploadSection.jsx";
 import {useEffect, useState} from "react";
 import EditableText from "../components/EditableText.jsx";
 import DeleteCollection from "../components/DeleteCollection.jsx";
@@ -91,51 +91,6 @@ export default function Profile() {
                             <Button variant="outlined" style={{marginTop: "20px"}} onClick={logoutPressed}>Logout</Button>
                         </div>
                     </Paper>
-                    <div style={{paddingTop: "30px"}}>
-                        <Paper style={{padding: "10px"}}>
-                            <Typography sx={{margin: "20px"}} variant="h5" >Collection Your Collection</Typography>
-                            <Typography variant="body" style={{marginTop: "10px"}}>
-                                Your data should be a csv/xls/xlsx file with 2 columns, left for english, right for polish.
-                            </Typography>
-                            <CollectionSection triggerDataReload={runTriggerDataReload}/>
-                        </Paper>
-                    </div>
-                    <div style={{paddingTop: "30px"}}>
-                        <Paper style={{padding: "10px"}}>
-                            <Typography variant="h5">Your Collections</Typography>
-                            {collectionItems === null ?
-                                <div>Loading...</div>:
-                            <TableContainer>
-                                <Table>
-                                    <TableHead sx={{background: ""}}>
-                                        <TableRow>
-                                            <TableCell>Active</TableCell>
-                                            <TableCell>Name</TableCell>
-                                            <TableCell>Items</TableCell>
-                                            <TableCell>Delete</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {Object.values(collectionItems).map((row) => (
-                                            <TableRow hover key={row.collectionId}>
-                                                <TableCell>
-                                                    <Checkbox checked={selectedCollection === row.collectionId} onClick={() => {collectionSelected(row.collectionId)}} size="large"/>
-                                                </TableCell>
-                                                <TableCell sx={{padding: "1px", paddingTop: "8px", width: "270px"}}>
-                                                    <EditableText row={row} triggerDataReload={runTriggerDataReload}/>
-                                                </TableCell>
-                                                <TableCell>{row.itemCount}</TableCell>
-                                                <TableCell sx={{width: "50px"}}>
-                                                    <DeleteCollection collectionId={row.collectionId} triggerDataReload={runTriggerDataReload}/>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            }
-                        </Paper>
-                    </div>
                 </div>
             </div>
         </div>

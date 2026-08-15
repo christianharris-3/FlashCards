@@ -34,7 +34,7 @@ export default function EditableText({row}) {
     }
 
     return (
-        <div style={{display: "flex", gap: "3px", height: "29px"}}>
+        <div style={{display: "flex", gap: "3px", height: "29px", marginLeft: "5px"}}>
             <TextField variant="standard"
                        defaultValue={row.collectionName}
                        size="small"

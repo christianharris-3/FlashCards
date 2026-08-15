@@ -16,10 +16,10 @@ export default function Home() {
             <div style={{paddingTop: "30px"}}>
                 <Paper style={{textAlign: "center", width: "800px", margin: "auto", padding: "40px"}}>
                     <Typography variant="h2" style={{fontFamily: "Georgia", fontWeight: "bold", marginBottom: "30px"}}>
-                        Spotisee
+                        Flash Cards
                     </Typography>
                     <Typography variant="body" style={{fontFamily: "Source Sans 3"}}>
-                        All of the ways of looking at music listening data that I could come up with
+                        Just some flash cards idk
                     </Typography>
 
                     {loggedIn ?

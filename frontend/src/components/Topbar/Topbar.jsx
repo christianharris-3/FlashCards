@@ -46,11 +46,12 @@ export default function Topbar() {
                 <div style={{display: "flex", gap: "50px"}}>
                     <div style={{minWidth: "100px", display: "flex", gap: 12, height: "100%", alignItems: "center"}}>
                         <LogoBw width={50} height={20} homeOnClick={true}/>
-                        <span style={{fontWeight: "bold"}}>Spotisee</span>
+                        <span style={{fontWeight: "bold"}}>FlashCards</span>
                     </div>
                     <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
                         <Button style={{color: "white"}} onClick={()=>navigate("/profile")}>Profile</Button>
-                        <Button style={{color: "white"}} onClick={()=>navigate("/table")}>Table</Button>
+                        <Button style={{color: "white"}} onClick={()=>navigate("/collections")}>Collections</Button>
+                        <Button style={{color: "white"}} onClick={()=>navigate("/learn")}>Learn</Button>
                     </div>
                 </div>
                 {loggedIn ?
