@@ -5,8 +5,12 @@ import com.flashcards.app.config.MySqlLogger;
 import com.flashcards.app.config.FlashCardAuthenticator;
 import com.flashcards.app.dao.AuthDao;
 import com.flashcards.app.dao.CollectionDao;
+import com.flashcards.app.dao.FlashCardDao;
 import com.flashcards.app.managers.CollectionManager;
+import com.flashcards.app.managers.FlashCardManager;
 import com.flashcards.app.managers.UserValidationManager;
+import com.flashcards.app.models.dao.FlashCard;
+import com.flashcards.app.resources.FlashCardResource;
 import com.flashcards.app.resources.LoginResource;
 import com.flashcards.app.resources.CollectionDataResource;
 import com.flashcards.app.exceptions.mapper.UnauthorisedExceptionMapper;
@@ -41,10 +45,12 @@ public class FlashCards extends Application<AppConfiguration> {
 
         CollectionDao collectionDao = jdbi.onDemand(CollectionDao.class);
         AuthDao authDao = jdbi.onDemand(AuthDao.class);
+        FlashCardDao flashCardDao = jdbi.onDemand(FlashCardDao.class);
 
         // Managers
-        CollectionManager collectionDataManager = new CollectionManager(collectionDao, authDao);
-        UserValidationManager userValidationManager = new UserValidationManager(authDao);
+        UserValidationManager userValidationManager = new UserValidationManager(authDao, flashCardDao);
+        CollectionManager collectionDataManager = new CollectionManager(collectionDao, flashCardDao, authDao);
+        FlashCardManager flashCardManager = new FlashCardManager(flashCardDao);
 
 
         // Auth
@@ -65,5 +71,6 @@ public class FlashCards extends Application<AppConfiguration> {
         // API endpoints
         environment.jersey().register(new LoginResource(authenticator));
         environment.jersey().register(new CollectionDataResource(collectionDataManager, userValidationManager));
+        environment.jersey().register(new FlashCardResource(flashCardManager, userValidationManager));
     }
 }

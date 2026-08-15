@@ -1,6 +1,7 @@
 package com.flashcards.app.dao;
 
 import com.flashcards.app.models.dao.CollectionInfo;
+import com.flashcards.app.models.dao.FlashCard;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
@@ -64,21 +65,4 @@ public interface CollectionDao {
     """)
     @GetGeneratedKeys
     long createCollection(@Bind("userId") long userId, @Bind("collectionName") String collectionName);
-
-    @SqlUpdate("""
-        INSERT INTO FlashCard (
-            collectionId,
-            frontText,
-            backText
-        ) VALUES (
-            :collectionId,
-            :frontText,
-            :backText
-        );
-    """)
-    void createFlashCard(
-            @Bind("collectionId") long collectionId,
-            @Bind("frontText") String frontText,
-            @Bind("backText") String backText
-    );
 }

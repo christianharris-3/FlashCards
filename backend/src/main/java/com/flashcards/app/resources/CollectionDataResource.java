@@ -5,6 +5,7 @@ import com.flashcards.app.managers.UserValidationManager;
 import com.flashcards.app.models.User;
 import com.flashcards.app.models.dao.CollectionInfo;
 import com.flashcards.app.models.requests.UpdateCollectionRequest;
+import com.flashcards.app.models.response.CollectionData;
 import io.dropwizard.auth.Auth;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
@@ -40,8 +41,8 @@ public class CollectionDataResource {
 
     @GET
     public Response listCollections(@Auth User user) {
-        List<CollectionInfo> collectionInfo = collectionManager.getCollections(user.getUserId());
-        return Response.ok(collectionInfo).build();
+        List<CollectionData> collectionData = collectionManager.getCollections(user.getUserId());
+        return Response.ok(collectionData).build();
     }
 
     @GET
