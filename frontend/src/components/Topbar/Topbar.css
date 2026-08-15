@@ -1,0 +1,21 @@
+@import url("../../styles/globals.css");
+
+.top-bar {
+    background-color: var(--color-background-warm);
+    margin: 0;
+    padding: var(--space-3);
+    border-bottom-color: var(--color-border);
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    height: 50px;
+}
+
+.top-divider {
+    margin: 3px auto;
+    width: calc(100% - 20px);
+    max-width: 1280px;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    flex-grow: 0;
+}

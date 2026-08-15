@@ -1,0 +1,41 @@
+@import "constants.css";
+
+body {
+  /*background-color: var(--color-background);*/
+  /*color: var(--color-text);*/
+  /*font: var(--font-body);*/
+  margin: 0;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  height: 100vh;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+/*.button-primary {*/
+/*  background: var(--color-primary);*/
+/*  color: var(--color-text-on-primary);*/
+/*}*/
+
+.page-container {
+  width: 100%;
+  max-width: 1280px;
+  height: 100vh;
+  margin: auto;
+}
+
+.page {
+  height: 100%;
+  align-items: center;
+}
+
+.centered-box {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  background-color: var(--color-background-warm);
+  border-radius : var(--space-2);
+  box-shadow: var(--shadow-md);
+}
