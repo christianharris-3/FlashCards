@@ -1,0 +1,23 @@
+
+.flashcard {
+    width: 300px;
+    height: 300px;
+    padding: 30px;
+    background-color: var(--color-background);
+    border-radius: 40px;
+    align-content: center;
+    box-shadow: var(--drop-shadow-xl);
+    transition-duration: 0.5s;
+    transition-delay: 0.35s;
+    transform-style: flat;
+}
+
+.flashcard.flipped {
+    transform: scaleX(0);
+    transition-delay: 0s;
+}
+
+.flashCard.otherSide {
+    position: absolute;
+    display: block;
+}
