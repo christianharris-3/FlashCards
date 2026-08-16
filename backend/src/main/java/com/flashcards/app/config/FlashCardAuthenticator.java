@@ -75,7 +75,7 @@ public class FlashCardAuthenticator implements Authenticator<String, User> {
                 .subject(user.getUsername())
                 .claim("username", user.getUsername())
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plus(3, ChronoUnit.HOURS)))
+                .expiration(Date.from(now.plus(12, ChronoUnit.HOURS)))
                 .signWith(key)
                 .compact();
     }

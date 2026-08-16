@@ -34,9 +34,10 @@ CREATE TABLE FlashCard(
 );
 
 CREATE TABLE FlashCardLog(
-    flashCardLogId BIGINT NOT NULL,
+    flashCardLogId BIGINT PRIMARY KEY AUTO_INCREMENT,
     flashCardId BIGINT NOT NULL,
 
     timestamp TIMESTAMP NOT NULL,
+    timeTakenMs INT,
     userFeedback INT
 );
