@@ -16,7 +16,7 @@ public interface LearningDao {
                 timestamp,
                 timeTakenMs,
                 userFeedback
-            ) WHERE (
+            ) VALUES (
                 :flashCardId,
                 :timestamp,
                 :timeTakenMs,
@@ -30,19 +30,22 @@ public interface LearningDao {
 
     @RegisterBeanMapper(FlashCardData.class)
     @SqlQuery("""
-            SELECT
-                FlashCard.flashCardId as flashCardId,
-                FlashCard.collectionId as collectionId,
-                FlashCard.collectionPosition as collectionPosition,
-                FlashCard.frontText as frontText,
-                FlashCard.backText as backText,
-                SUM(FlashCardLog.userFeedback) as priority,
-                MAX(FlashCardLog.timestamp) = CURDATE() as seenToday
-            FROM FlashCard LEFT JOIN FlashCardLog
-            ON FlashCard.flashCardId = FlashCardLog.flashCardId
-            WHERE FlashCard.collectionId = :collectionId
-            GROUP BY flashCardId
-            ORDER BY priority;
+            With mainData AS (
+                SELECT
+                    FlashCard.flashCardId as flashCardId,
+                    FlashCard.collectionId as collectionId,
+                    FlashCard.collectionPosition as collectionPosition,
+                    FlashCard.frontText as frontText,
+                    FlashCard.backText as backText,
+                    COALESCE(SUM(FlashCardLog.userFeedback), 0) as priority,
+                    COALESCE(MAX(DATE(FlashCardLog.timestamp)) = CURDATE(), false) as seenToday
+                FROM FlashCard LEFT JOIN FlashCardLog
+                ON FlashCard.flashCardId = FlashCardLog.flashCardId
+                WHERE FlashCard.collectionId = :collectionId
+                GROUP BY flashCardId
+                ORDER BY seenToday ASC, priority ASC
+            )
+            SELECT * FROM mainData WHERE NOT seenToday;
             """)
     List<FlashCardData> getFlashCardsWithPriority(@Bind("collectionId") long collectionId);
 

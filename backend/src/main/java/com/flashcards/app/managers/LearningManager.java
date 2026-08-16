@@ -15,8 +15,8 @@ public class LearningManager {
         this.learningDao = learningDao;
     }
 
-    public void addFlashCardLog(long flashCardId, Timestamp timestamp, Integer timeTakenMs, Integer userFeedback) {
-        learningDao.addFlashCardLog(flashCardId, timestamp, timeTakenMs, userFeedback);
+    public void addFlashCardLog(long flashCardId, String timestamp, Integer timeTakenMs, Integer userFeedback) {
+        learningDao.addFlashCardLog(flashCardId, Timestamp.valueOf(timestamp), timeTakenMs, userFeedback);
     }
 
     public List<FlashCardData> getFlashCardsWithPriority(long collectionId) {

@@ -6,6 +6,8 @@ import com.flashcards.app.models.User;
 import com.flashcards.app.models.dao.FlashCardData;
 import com.flashcards.app.models.requests.AddFlashCardLogRequest;
 import io.dropwizard.auth.Auth;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -28,7 +30,7 @@ public class LearningResource {
     @Path("/log-flashcard-use/{flashCardId}")
     public Response logFlashCardUse(@Auth User user,
                                     @PathParam("flashCardId") long flashCardId,
-                                    AddFlashCardLogRequest request) {
+                                    @NotNull @Valid AddFlashCardLogRequest request) {
         userValidationManager.validateUserHasFlashCard(user, flashCardId);
         learningManager.addFlashCardLog(
                 flashCardId,

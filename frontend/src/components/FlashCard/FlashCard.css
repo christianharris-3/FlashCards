@@ -7,8 +7,8 @@
     border-radius: 40px;
     align-content: center;
     box-shadow: var(--drop-shadow-xl);
-    transition-duration: 0.5s;
-    transition-delay: 0.35s;
+    transition-duration: 0.15s;
+    transition-delay: 0.15s;
     transform-style: flat;
 }
 
@@ -17,7 +17,7 @@
     transition-delay: 0s;
 }
 
-.flashCard.otherSide {
+#cardBack {
     position: absolute;
-    display: block;
+    background: var(--color-background-warm);
 }
