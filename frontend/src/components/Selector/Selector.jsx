@@ -42,6 +42,7 @@ export default function Selector({style, items, selectedValue, setSelectedValue,
             </div>
             {items.map((item) =>
                 <Typography
+                    key={`selectorItem-${item}`}
                     defaultValue={item}
                     underline="none"
                     onClick={handleOnClick}

@@ -32,6 +32,7 @@ public class LearningResource {
                                     @PathParam("flashCardId") long flashCardId,
                                     @NotNull @Valid AddFlashCardLogRequest request) {
         userValidationManager.validateUserHasFlashCard(user, flashCardId);
+        System.out.println(request.getTimestamp());
         learningManager.addFlashCardLog(
                 flashCardId,
                 request.getTimestamp(),

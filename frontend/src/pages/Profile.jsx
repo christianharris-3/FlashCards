@@ -19,9 +19,6 @@ import DeleteCollection from "../components/DeleteCollection.jsx";
 
 export default function Profile() {
     const navigate = useNavigate();
-    const [collectionItems, setCollectionItems] = useState(null);
-    const [triggerDataReload, setTriggerDataReload] = useState(1);
-    const [selectedCollection, setSelectedCollection] = useState(null);
 
     useEffect(() => {
         if (localStorage.getItem("loggedIn") !== "true") {
@@ -34,46 +31,6 @@ export default function Profile() {
         navigate("/")
     }
 
-    useEffect(() => {
-        fetch("/api/collections", {
-            method: "GET",
-            headers: getHeaders()
-        }).then(r => r.json()).then(json => {
-            if (json.length > 0) {
-                setSelectedCollection(json[0].collectionId);
-            }
-            setCollectionItems(Object.fromEntries(
-                json.map(item => [item.collectionId, item])
-            ));
-        });
-    }, [triggerDataReload]);
-
-    useEffect(() => {
-        if (selectedCollection !== null && selectedCollection !== undefined) {
-            localStorage.setItem("activeCollectionId", selectedCollection.toString())
-            fetch("/api/collections/select/"+selectedCollection, {
-                method: "POST",
-                headers: getHeaders()
-            }).then()
-        }
-    }, [selectedCollection]);
-
-    function runTriggerDataReload() {
-        setTriggerDataReload(triggerDataReload + 1);
-    }
-
-    function formatDate(unixTime) {
-        if (unixTime === null) {
-            return "Unknown"
-        }
-        let date = new Date(unixTime);
-        let month = date.toLocaleString("en-gb", {month: "short"});
-        return `${month} ${date.getFullYear()}`
-    }
-
-    function collectionSelected(collectionId) {
-        setSelectedCollection(collectionId);
-    }
 
 
 

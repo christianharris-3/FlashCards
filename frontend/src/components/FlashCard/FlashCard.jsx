@@ -10,7 +10,7 @@ export default function FlashCard({frontText, backText, cardFlipped, setCardFlip
     }
 
     return (
-        <div onClick={flipCard} style={{display: "flex", justifyContent: "center"}}>
+        <div onClick={flipCard} style={{display: "flex", justifyContent: "center", textAlign: "center"}}>
             <div className={cardFlipped? "flashcard flipped" : "flashcard"}>
                 <Typography variant="h5">
                     {frontText}

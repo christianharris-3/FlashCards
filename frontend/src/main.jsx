@@ -8,7 +8,8 @@ import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
 import Collections from "./pages/Collections.jsx";
 import ViewCollection from "./pages/ViewCollection.jsx";
-import LearnPage from "./pages/learnPage.jsx";
+import LearnStartPage from "./pages/learnStartPage.jsx";
+import LearnFlashCardPage from "./pages/LearnFlashCardPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -21,7 +22,8 @@ const router = createBrowserRouter([
             {path: "/profile", element: <Profile />},
             {path: "/collections", element: <Collections />},
             {path: "/collections/:collectionId", element: <ViewCollection />},
-            {path: "/learn", element: <LearnPage />}
+            {path: "/learn", element: <LearnStartPage />},
+            {path: "/learn/:learnType/:collectionId", element: <LearnFlashCardPage />}
         ]
     }
 ])

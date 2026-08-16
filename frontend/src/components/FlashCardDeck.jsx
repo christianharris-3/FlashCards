@@ -42,6 +42,7 @@ export default function FlashCardDeck({flashCardData}) {
             if (r.ok) {
                 setPrevSubmitTimestamp(timestamp);
                 nextFlashCard();
+                console.log(r);
             }
         })
     }
