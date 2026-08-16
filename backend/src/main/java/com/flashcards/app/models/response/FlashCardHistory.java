@@ -10,7 +10,8 @@ import java.util.List;
 public class FlashCardHistory {
     private long flashCardId;
     private long collectionId;
-    private long frontText;
-    private long backText;
+    private int collectionPosition;
+    private String frontText;
+    private String backText;
     private List<FlashCardLog> logs;
 }

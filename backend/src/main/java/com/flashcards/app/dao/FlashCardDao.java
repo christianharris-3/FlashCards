@@ -15,23 +15,26 @@ public interface FlashCardDao {
     @SqlUpdate("""
                 INSERT INTO FlashCard (
                     collectionId,
+                    collectionPosition,
                     frontText,
                     backText
                 ) VALUES (
                     :collectionId,
+                    :collectionPosition,
                     :frontText,
                     :backText
                 );
             """)
     void createFlashCard(
             @Bind("collectionId") long collectionId,
+            @Bind("collectionPosition") int collectionPosition,
             @Bind("frontText") String frontText,
             @Bind("backText") String backText
     );
 
     @RegisterBeanMapper(FlashCard.class)
     @SqlQuery("""
-            SELECT flashCardId, collectionId, frontText, backText
+            SELECT flashCardId, collectionId, collectionPosition, frontText, backText
             FROM FlashCard
             WHERE (flashCardId = :flashCardId);
             """)
@@ -47,21 +50,24 @@ public interface FlashCardDao {
 
     @RegisterBeanMapper(FlashCard.class)
     @SqlQuery("""
-            SELECT flashCardId, collectionId, frontText, backText
+            SELECT flashCardId, collectionId, collectionPosition, frontText, backText
             FROM FlashCard
-            WHERE (collectionId = :collectionId);
+            WHERE (collectionId = :collectionId)
+            ORDER BY collectionPosition ASC;
             """)
     List<FlashCard> getFlashCards(@Bind("collectionId") long collectionId);
 
     @SqlUpdate("""
             UPDATE FlashCard
-            SET frontText = COALESCE(:frontText, frontText),
+            SET collectionPosition = COALESCE(:collectionPosition, collectionPosition),
+                frontText = COALESCE(:frontText, frontText),
                 backText = COALESCE(:backText, backText)
             WHERE (flashCardId = :flashCardId);
             """)
     void updateFlashCard(@Bind("flashCardId") long flashCardId,
-                          @Bind("frontText") String frontText,
-                          @Bind("backText") String backText);
+                         @Bind("collectionPosition") Integer collectionPosition,
+                         @Bind("frontText") String frontText,
+                         @Bind("backText") String backText);
 
 
     @SqlUpdate("""
@@ -70,4 +76,26 @@ public interface FlashCardDao {
             """)
     void deleteFlashCard(@Bind("flashCardId") long flashCardId);
 
+    @SqlQuery("""
+            SELECT MAX(collectionPosition)
+            FROM FlashCard
+            WHERE (collectionId = :collectionId);
+            """)
+    int getMaxFlashCountPosition(@Bind("collectionId") long collectionId);
+
+    @SqlUpdate("""
+            WITH FlashCardsWithFixed AS (
+                SELECT flashCardId, collectionPosition, (flashCardId = :fixedFlashCardId) AS isFixed
+                FROM FlashCard WHERE (collectionId = :collectionId)
+            ), ReorderData AS (
+                SELECT flashCardId, ROW_NUMBER() OVER (ORDER BY collectionPosition ASC, isFixed DESC) AS newCollectionPosition
+                FROM FlashCardsWithFixed
+            )
+            UPDATE FlashCard original
+            JOIN ReorderData new
+            ON original.flashCardId = new.flashCardId
+            SET original.collectionPosition = new.newCollectionPosition;
+            """)
+    void reCalculateCollectionPositions(@Bind("collectionId") long collectionId,
+                                        @Bind("fixedFlashCardId") long fixedFlashCardId);
 }

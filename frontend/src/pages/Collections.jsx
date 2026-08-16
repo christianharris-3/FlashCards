@@ -9,7 +9,7 @@ import {
     TableHead, TableRow,
     Typography
 } from "@mui/material";
-import {getHeaders} from "../utils/utils.js";
+import {getHeaders, getHeadersJson} from "../utils/utils.js";
 import {useNavigate} from "react-router-dom";
 import UploadSection from "../components/UploadSection.jsx";
 import {useEffect, useState} from "react";
@@ -54,6 +54,22 @@ export default function Collections() {
         setSelectedCollection(collectionId);
     }
 
+    function saveTitle(newCollectionName, row) {
+        return fetch("/api/collections/"+row.collectionId, {
+            method: "PUT",
+            headers: getHeadersJson(),
+            body: JSON.stringify({collectionName: newCollectionName})
+        }).then(r => {
+            if (r.ok) {
+                row.collectionName = newCollectionName;
+                return true;
+            } else {
+                console.log("failed to edit title", r);
+                return false;
+            }
+        })
+    }
+
     return (
         <div className="page">
             <div style={{textAlign: "center", maxWidth: "800px", margin: "auto", padding: "40px"}}>
@@ -85,7 +101,10 @@ export default function Collections() {
                                             <TableRow hover key={row.collectionId}>
                                                 <TableCell sx={{padding: "1px", paddingTop: "8px", width: "270px"}}>
                                                     <EditableText row={row}
-                                                                  triggerDataReload={runTriggerDataReload}/>
+                                                                  defaultText={row.collectionName}
+                                                                  saveFunc={saveTitle}
+                                                                  key={row.collectionId}
+                                                    />
                                                 </TableCell>
                                                 <TableCell align="center">{row.itemCount}</TableCell>
                                                 <TableCell align="center">

@@ -1,50 +1,50 @@
 import {Button, TextField} from "@mui/material";
 import {useState} from "react";
-import {getHeadersJson} from "../utils/utils.js";
 
-export default function EditableText({row}) {
+export default function EditableText({defaultText, row, saveFunc, key}) {
     const [showSaveButton, setShowSaveButton] = useState(false);
     const [saveButtonLoading, setSaveButtonLoading] = useState(false);
-    const [newCollectionName, setNewCollectionName] = useState("");
+    const [newText, setNewText] = useState("");
 
-    function collectionNameEdited(event, title) {
-        setNewCollectionName(title);
-        if (title !== row.collectionName) {
+    function textEdited(event, title) {
+        setNewText(title);
+        if (title !== defaultText.toString()) {
             setShowSaveButton(true)
         } else {
             setShowSaveButton(false);
         }
     }
 
-    function saveTitle(event, collectionId) {
+    function savePressed(event) {
         setSaveButtonLoading(true);
-        fetch("/api/collections/"+collectionId, {
-            method: "PUT",
-            headers: getHeadersJson(),
-            body: JSON.stringify({collectionName: newCollectionName})
-        }).then(r => {
-            if (r.ok) {
-                setSaveButtonLoading(false);
-                setShowSaveButton(false);
-                row.collectionName = newCollectionName;
-            } else {
-                console.log("failed to edit title", r);
-            }
-        })
+        if (saveFunc(newText, row)) {
+            setSaveButtonLoading(false);
+            setShowSaveButton(false);
+        } else {
+            setSaveButtonLoading(false);
+            setShowSaveButton(false);
+        }
+
     }
+
 
     return (
         <div style={{display: "flex", gap: "3px", height: "29px", marginLeft: "5px"}}>
             <TextField variant="standard"
-                       defaultValue={row.collectionName}
+                       key={key}
+                       defaultValue={defaultText}
                        size="small"
-                       style={{flexGrow: 1}}
+                       style={{flexGrow: 1, minWidth: "30px"}}
                        onChange={(e) => {
-                           collectionNameEdited(e, e.target.value, row.collectionId)
-                       }}/>
+                           textEdited(e, e.target.value)
+                       }}
+                       onKeyDown={(event) => {
+                           if (event.key === "Enter") {savePressed(event)}
+                       }}
+            />
             {showSaveButton ?
                 <Button loading={saveButtonLoading} size="medium"
-                    onClick={(e) => {saveTitle(e, row.collectionId)
+                    onClick={(e) => {savePressed(e)
                 }}>Save</Button> : <></>
             }
         </div>

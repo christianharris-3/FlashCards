@@ -63,7 +63,7 @@ export default function Register() {
                                        }}></TextField>
                             <TextField id="outlined-password"
                                        label="Password"
-                                       type="password1"
+                                       type="password"
                                        value={password1}
                                        error={passwordsNotEqualError || passwordEmptyError}
                                        helperText={passwordEmptyError? "Password can't be empty": ""}
@@ -72,7 +72,7 @@ export default function Register() {
                                        }}></TextField>
                             <TextField id="outlined-password"
                                        label="Repeat Password"
-                                       type="password2"
+                                       type="password"
                                        value={password2}
                                        error={passwordsNotEqualError || passwordEmptyError}
                                        onChange={(e) => {

@@ -28,7 +28,7 @@ CREATE TABLE Collection(
 CREATE TABLE FlashCard(
     flashCardId BIGINT PRIMARY KEY AUTO_INCREMENT,
     collectionId BIGINT NOT NULL,
-
+    collectionPosition INT NOT NULL,
     frontText VARCHAR(1024) NOT NULL,
     backText VARCHAR(1024) NOT NULL
 );

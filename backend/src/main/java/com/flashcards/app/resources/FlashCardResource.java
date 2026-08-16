@@ -51,7 +51,10 @@ public class FlashCardResource {
                                     @PathParam("flashCardId") long flashCardId,
                                     @NotNull UpdateFlashCardRequest request) {
         userValidationManager.validateUserHasFlashCard(user, flashCardId);
-        flashCardManager.updateFlashCard(flashCardId, request.getFrontText(), request.getBackText());
+        flashCardManager.updateFlashCard(flashCardId,
+                request.getCollectionPosition(),
+                request.getFrontText(),
+                request.getBackText());
         return Response.accepted().build();
     }
 

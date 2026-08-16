@@ -41,7 +41,7 @@ public class CollectionDataResource {
 
     @GET
     public Response listCollections(@Auth User user) {
-        List<CollectionData> collectionData = collectionManager.getCollections(user.getUserId());
+        List<CollectionInfo> collectionData = collectionManager.getCollections(user.getUserId());
         return Response.ok(collectionData).build();
     }
 
@@ -49,7 +49,7 @@ public class CollectionDataResource {
     @Path("/{collectionId}")
     public Response getCollection(@Auth User user, @PathParam("collectionId") long collectionId) {
         userValidationManager.validateUserHasCollection(user, collectionId);
-        Optional<CollectionInfo> collectionInfo = collectionManager.getCollection(collectionId);
+        Optional<CollectionData> collectionInfo = collectionManager.getCollectionData(collectionId);
         if (collectionInfo.isEmpty()) {
             return Response.noContent().build();
         }

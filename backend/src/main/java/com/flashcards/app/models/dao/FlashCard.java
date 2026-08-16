@@ -6,7 +6,7 @@ import lombok.Data;
 public class FlashCard {
     private long flashCardId;
     private long collectionId;
-
-    private long frontText;
-    private long backText;
+    private int collectionPosition;
+    private String frontText;
+    private String backText;
 }

@@ -31,7 +31,7 @@ public interface CollectionDao {
     @SqlQuery("""
             SELECT Collection.collectionId,
                    Collection.collectionName,
-                   COUNT(FlashCard.flashCardId) as itemCount,
+                   COUNT(FlashCard.flashCardId) as itemCount
             FROM Collection LEFT JOIN FlashCard
             ON Collection.collectionId = FlashCard.collectionId
             WHERE (Collection.collectionId = :collectionId)
