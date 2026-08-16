@@ -103,7 +103,7 @@ export default function Collections() {
                                                     <EditableText row={row}
                                                                   defaultText={row.collectionName}
                                                                   saveFunc={saveTitle}
-                                                                  key={row.collectionId}
+                                                                  htmlKey={row.collectionId}
                                                     />
                                                 </TableCell>
                                                 <TableCell align="center">{row.itemCount}</TableCell>

@@ -54,19 +54,19 @@ export default function FlashCardRow({row, triggerReload, reloadKey}) {
                 defaultText={row.collectionPosition}
                 row={row}
                 saveFunc={saveIndex}
-                key={`textInputIndex${row.flashCardId}-${reloadKey}`}
+                htmlKey={`textInputIndex${row.flashCardId}-${reloadKey}`}
             /></TableCell>
             <TableCell size="small"><EditableText
                 defaultText={row.frontText}
                 row={row}
                 saveFunc={saveFrontText}
-                key={`textInputFrontText${row.flashCardId}-${reloadKey}`}
+                htmlKey={`textInputFrontText${row.flashCardId}-${reloadKey}`}
             /></TableCell>
             <TableCell size="small"><EditableText
                 defaultText={row.backText}
                 row={row}
                 saveFunc={saveBackText}
-                key={`textInputBackText${row.flashCardId}-${reloadKey}`}
+                htmlKey={`textInputBackText${row.flashCardId}-${reloadKey}`}
             /></TableCell>
         </TableRow>
     )

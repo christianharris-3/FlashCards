@@ -1,7 +1,7 @@
 import {Button, TextField} from "@mui/material";
 import {useState} from "react";
 
-export default function EditableText({defaultText, row, saveFunc, key}) {
+export default function EditableText({defaultText, row, saveFunc, htmlKey}) {
     const [showSaveButton, setShowSaveButton] = useState(false);
     const [saveButtonLoading, setSaveButtonLoading] = useState(false);
     const [newText, setNewText] = useState("");
@@ -31,7 +31,7 @@ export default function EditableText({defaultText, row, saveFunc, key}) {
     return (
         <div style={{display: "flex", gap: "3px", height: "29px", marginLeft: "5px"}}>
             <TextField variant="standard"
-                       key={key}
+                       key={htmlKey}
                        defaultValue={defaultText}
                        size="small"
                        style={{flexGrow: 1, minWidth: "30px"}}
