@@ -9,7 +9,7 @@ import {
     Stack,
     Typography
 } from "@mui/material";
-import {getHeaders} from "../utils/utils.js";
+import {getHeaders, getHeadersJson} from "../utils/utils.js";
 import FlashCard from "../components/FlashCard/FlashCard.jsx";
 import {useEffect, useState} from "react";
 import FlashCardDeck from "../components/FlashCardDeck.jsx";
@@ -55,15 +55,20 @@ export default function LearnStartPage() {
     }
 
     function handleStartPressed() {
-        let navigateUrl = `/learn/${selectedLearnType.toLowerCase().replace(" ", "")}/${collectionSelected}`;
-        let params = {}
-        if (showRangeUi) {
-            params = {
+        fetch(`/api/learn/create/${selectedLearnType.toLowerCase().replace(" ", "")}/${collectionSelected}`, {
+            method: "POST",
+            headers: getHeadersJson(),
+            body: JSON.stringify({
                 start: rangeSliderValue[0],
                 end: rangeSliderValue[1]
+            })
+        }).then(r => {
+            if (r.ok) {
+                r.json().then(json => {
+                    navigate(`/learn/${json.learningInstanceId}`)
+                })
             }
-        }
-        navigate(`${navigateUrl}?${new URLSearchParams(params)}`)
+        })
     }
 
     function handChangeNumCards(event) {
@@ -109,7 +114,7 @@ export default function LearnStartPage() {
                 padding: "40px", display: "flex", gap: "20px", flexDirection: "column"
             }}>
                 <Typography variant="h4">
-                    Practice Collection
+                    Practise Collection
                 </Typography>
                 {collectionList === null?
                     <CircularProgress />:

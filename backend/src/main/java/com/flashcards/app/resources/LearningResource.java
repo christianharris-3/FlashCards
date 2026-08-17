@@ -4,7 +4,10 @@ import com.flashcards.app.managers.LearningManager;
 import com.flashcards.app.managers.UserValidationManager;
 import com.flashcards.app.models.User;
 import com.flashcards.app.models.dao.FlashCardData;
+import com.flashcards.app.models.dao.FlashCardInLearningInstance;
 import com.flashcards.app.models.requests.AddFlashCardLogRequest;
+import com.flashcards.app.models.requests.CreateLearningInstanceRequest;
+import com.flashcards.app.models.response.CreateLearningInstanceResponse;
 import io.dropwizard.auth.Auth;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +17,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 
-@Path("api")
+@Path("api/learn")
 @Produces(MediaType.APPLICATION_JSON)
 public class LearningResource {
 
@@ -41,26 +44,62 @@ public class LearningResource {
     }
 
     @GET
-    @Path("/learn/priority/{collectionId}")
-    public Response getFlashCardsWithPriority(@Auth User user, @PathParam("collectionId") long collectionId) {
-        userValidationManager.validateUserHasCollection(user, collectionId);
-        List<FlashCardData> flashCardData = learningManager.getFlashCardsWithPriority(collectionId);
-        return Response.accepted(flashCardData).build();
+    @Path("/{learningInstanceId}")
+    public Response loadingLearningInstanceCards(@Auth User user, @PathParam("learningInstanceId") long learningInstanceId) {
+        userValidationManager.validateUserHasLearningInstance(user, learningInstanceId);
+        List<FlashCardInLearningInstance> cards = learningManager.getLearningInstanceCards(learningInstanceId);
+        return Response.accepted(cards).build();
     }
 
-    @GET
-    @Path("/learn/daily/{collectionId}")
-    public Response getFlashCardsDaily(@Auth User user, @PathParam("collectionId") long collectionId) {
+    @POST
+    @Path("/create/daily/{collectionId}")
+    public Response createLearningInstanceDaily(@Auth User user,
+                                                   @PathParam("collectionId") long collectionId,
+                                                   @NotNull CreateLearningInstanceRequest request
+                                                   ) {
         userValidationManager.validateUserHasCollection(user, collectionId);
-        List<FlashCardData> flashCardData = learningManager.getFlashCardsDaily(collectionId);
-        return Response.accepted(flashCardData).build();
+        long learningInstanceId = learningManager.createLearningInstanceDaily(collectionId, request.getStartIndex(), request.getEndIndex());
+        return Response.accepted(
+                new CreateLearningInstanceResponse(learningInstanceId)
+        ).build();
     }
 
-    @GET
-    @Path("/learn/random/{collectionId}")
-    public Response getFlashCardsRandom(@Auth User user, @PathParam("collectionId") long collectionId) {
+    @POST
+    @Path("/create/priority/{collectionId}")
+    public Response createLearningInstancePriority(@Auth User user,
+                                                   @PathParam("collectionId") long collectionId,
+                                                   @NotNull CreateLearningInstanceRequest request
+    ) {
         userValidationManager.validateUserHasCollection(user, collectionId);
-        List<FlashCardData> flashCardData = learningManager.getFlashCardsRandom(collectionId);
-        return Response.accepted(flashCardData).build();
+        long learningInstanceId = learningManager.createLearningInstancePriority(collectionId, request.getStartIndex(), request.getEndIndex());
+        return Response.accepted(
+                new CreateLearningInstanceResponse(learningInstanceId)
+        ).build();
+    }
+
+    @POST
+    @Path("/create/inorder/{collectionId}")
+    public Response createLearningInstanceInOrder(@Auth User user,
+                                                   @PathParam("collectionId") long collectionId,
+                                                   @NotNull CreateLearningInstanceRequest request
+    ) {
+        userValidationManager.validateUserHasCollection(user, collectionId);
+        long learningInstanceId = learningManager.createLearningInstanceInOrder(collectionId, request.getStartIndex(), request.getEndIndex());
+        return Response.accepted(
+                new CreateLearningInstanceResponse(learningInstanceId)
+        ).build();
+    }
+
+    @POST
+    @Path("/create/random/{collectionId}")
+    public Response createLearningInstanceRandom(@Auth User user,
+                                                   @PathParam("collectionId") long collectionId,
+                                                   @NotNull CreateLearningInstanceRequest request
+    ) {
+        userValidationManager.validateUserHasCollection(user, collectionId);
+        long learningInstanceId = learningManager.createLearningInstanceRandom(collectionId, request.getStartIndex(), request.getEndIndex());
+        return Response.accepted(
+                new CreateLearningInstanceResponse(learningInstanceId)
+        ).build();
     }
 }

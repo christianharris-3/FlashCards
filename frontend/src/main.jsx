@@ -23,7 +23,7 @@ const router = createBrowserRouter([
             {path: "/collections", element: <Collections />},
             {path: "/collections/:collectionId", element: <ViewCollection />},
             {path: "/learn", element: <LearnStartPage />},
-            {path: "/learn/:learnType/:collectionId", element: <LearnFlashCardPage />}
+            {path: "/learn/:learningInstanceId", element: <LearnFlashCardPage />}
         ]
     }
 ])

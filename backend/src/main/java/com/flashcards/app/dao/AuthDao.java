@@ -53,4 +53,12 @@ public interface AuthDao {
             WHERE userId = :userId;
             """)
     void setActiveCollection(@Bind("userId") long userId, @Bind("collectionId") long collectionId);
+
+    @SqlQuery("""
+            SELECT Collection.userId
+            FROM LearningInstance JOIN Collection
+            ON LearningInstance.collectionId = Collection.collectionId
+            WHERE LearningInstance.learningInstanceId = :learningInstanceId;
+            """)
+    Optional<Long> getLearningInstanceUserId(@Bind("learningInstanceId") long learningInstanceId);
 }

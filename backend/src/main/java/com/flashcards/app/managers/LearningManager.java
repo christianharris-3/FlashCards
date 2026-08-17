@@ -3,6 +3,7 @@ package com.flashcards.app.managers;
 import com.flashcards.app.dao.LearningDao;
 import com.flashcards.app.models.dao.FlashCard;
 import com.flashcards.app.models.dao.FlashCardData;
+import com.flashcards.app.models.dao.FlashCardInLearningInstance;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -19,15 +20,43 @@ public class LearningManager {
         learningDao.addFlashCardLog(flashCardId, Timestamp.valueOf(timestamp), timeTakenMs, userFeedback);
     }
 
-    public List<FlashCardData> getFlashCardsWithPriority(long collectionId) {
-        return learningDao.getFlashCardsWithPriority(collectionId);
+    public List<FlashCardInLearningInstance> getLearningInstanceCards(long learningInstanceId) {
+        return learningDao.getLearningInstanceCards(learningInstanceId);
     }
 
-    public List<FlashCardData> getFlashCardsDaily(long collectionId) {
-        return learningDao.getFlashCardsDaily(collectionId);
+    public long createLearningInstanceDaily(long collectionId, int startIndex, int endIndex) {
+        long learningInstanceId = learningDao.createLearningInstance(collectionId);
+        learningDao.populateLearningInstanceDaily(learningInstanceId,
+                collectionId,
+                endIndex - startIndex,
+                startIndex);
+        return learningInstanceId;
     }
 
-    public List<FlashCardData> getFlashCardsRandom(long collectionId) {
-        return learningDao.getFlashCardsRandom(collectionId);
+    public long createLearningInstancePriority(long collectionId, int startIndex, int endIndex) {
+        long learningInstanceId = learningDao.createLearningInstance(collectionId);
+        learningDao.populateLearningInstancePriority(learningInstanceId,
+                collectionId,
+                endIndex - startIndex,
+                startIndex);
+        return learningInstanceId;
+    }
+
+    public long createLearningInstanceInOrder(long collectionId, int startIndex, int endIndex) {
+        long learningInstanceId = learningDao.createLearningInstance(collectionId);
+        learningDao.populateLearningInstanceInOrder(learningInstanceId,
+                collectionId,
+                endIndex - startIndex,
+                startIndex);
+        return learningInstanceId;
+    }
+
+    public long createLearningInstanceRandom(long collectionId, int startIndex, int endIndex) {
+        long learningInstanceId = learningDao.createLearningInstance(collectionId);
+        learningDao.populateLearningInstanceRandom(learningInstanceId,
+                collectionId,
+                endIndex - startIndex,
+                startIndex);
+        return learningInstanceId;
     }
 }

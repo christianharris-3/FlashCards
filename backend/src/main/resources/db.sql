@@ -3,7 +3,9 @@ DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS UserRole;
 DROP TABLE IF EXISTS Collection;
 DROP TABLE IF EXISTS FlashCard;
-DROP TABLE IF EXISTS FlashCardLog;
+DROP TABLE IF EXISTS FlashCardUse;
+DROP TABLE IF EXISTS LearningInstance;
+DROP VIEW IF EXISTS FlashCardsWithPriority;
 
 
 CREATE TABLE Users(
@@ -33,11 +35,32 @@ CREATE TABLE FlashCard(
     backText VARCHAR(1024) NOT NULL
 );
 
-CREATE TABLE FlashCardLog(
-    flashCardLogId BIGINT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE FlashCardUse(
+    flashCardUseId BIGINT PRIMARY KEY AUTO_INCREMENT,
     flashCardId BIGINT NOT NULL,
-
-    timestamp TIMESTAMP NOT NULL,
+    learningInstanceId BIGINT NOT NULL,
+    learningInstancePosition INT NOT NULL,
+    complete BOOLEAN NOT NULL,
+    timestamp TIMESTAMP,
     timeTakenMs INT,
     userFeedback INT
 );
+
+CREATE TABLE LearningInstance(
+    learningInstanceId BIGINT PRIMARY KEY AUTO_INCREMENT,
+    collectionId BIGINT NOT NULL,
+    startedTimestamp TIMESTAMP,
+    endTimestamp TIMESTAMP
+);
+
+CREATE VIEW FlashCardsWithPriority AS SELECT
+        FlashCard.flashCardId as flashCardId,
+        FlashCard.collectionId as collectionId,
+        FlashCard.collectionPosition as collectionPosition,
+        FlashCard.frontText as frontText,
+        FlashCard.backText as backText,
+        COALESCE(SUM(FlashCardUse.userFeedback), 0) as priority,
+        COALESCE(MAX(DATE(FlashCardUse.timestamp)) = CURDATE(), false) as seenToday
+    FROM FlashCard LEFT JOIN FlashCardUse
+    ON FlashCard.flashCardId = FlashCardUse.flashCardId AND NOT FlashCardUse.complete
+    GROUP BY flashCardId;

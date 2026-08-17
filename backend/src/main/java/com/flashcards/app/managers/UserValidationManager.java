@@ -33,4 +33,11 @@ public class UserValidationManager {
         }
         validateUserHasCollection(user, flashCard.get().getCollectionId());
     }
+
+    public void validateUserHasLearningInstance(User user, long learningInstanceId) throws CollectionNotOwnedException {
+        Optional<Long> userId = authDao.getLearningInstanceUserId(learningInstanceId);
+        if (userId.isEmpty() || userId.get() != user.getUserId()) {
+            throw new CollectionNotOwnedException();
+        }
+    }
 }
