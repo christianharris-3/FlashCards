@@ -32,7 +32,6 @@ public class LearningResource {
                                     @PathParam("flashCardId") long flashCardId,
                                     @NotNull @Valid AddFlashCardLogRequest request) {
         userValidationManager.validateUserHasFlashCard(user, flashCardId);
-        System.out.println(request.getTimestamp());
         learningManager.addFlashCardLog(
                 flashCardId,
                 request.getTimestamp(),
@@ -42,10 +41,26 @@ public class LearningResource {
     }
 
     @GET
-    @Path("/collection-by-priority/{collectionId}")
+    @Path("/learn/priority/{collectionId}")
     public Response getFlashCardsWithPriority(@Auth User user, @PathParam("collectionId") long collectionId) {
         userValidationManager.validateUserHasCollection(user, collectionId);
         List<FlashCardData> flashCardData = learningManager.getFlashCardsWithPriority(collectionId);
+        return Response.accepted(flashCardData).build();
+    }
+
+    @GET
+    @Path("/learn/daily/{collectionId}")
+    public Response getFlashCardsDaily(@Auth User user, @PathParam("collectionId") long collectionId) {
+        userValidationManager.validateUserHasCollection(user, collectionId);
+        List<FlashCardData> flashCardData = learningManager.getFlashCardsDaily(collectionId);
+        return Response.accepted(flashCardData).build();
+    }
+
+    @GET
+    @Path("/learn/random/{collectionId}")
+    public Response getFlashCardsRandom(@Auth User user, @PathParam("collectionId") long collectionId) {
+        userValidationManager.validateUserHasCollection(user, collectionId);
+        List<FlashCardData> flashCardData = learningManager.getFlashCardsRandom(collectionId);
         return Response.accepted(flashCardData).build();
     }
 }

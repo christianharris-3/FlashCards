@@ -1,9 +1,9 @@
 import FlashCard from "./FlashCard/FlashCard.jsx";
-import {Button, Slider, Typography} from "@mui/material";
+import {Button, CircularProgress, Slider, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
 import {getHeadersJson, toDateString} from "../utils/utils.js";
 
-export default function FlashCardDeck({flashCardData}) {
+export default function FlashCardDeck({flashCardData, deckFinished}) {
 
     const [cardFlipped, setCardFlipped] = useState(false);
     const [currentFlashCard, setCurrentFlashCard] = useState(null);
@@ -42,7 +42,6 @@ export default function FlashCardDeck({flashCardData}) {
             if (r.ok) {
                 setPrevSubmitTimestamp(timestamp);
                 nextFlashCard();
-                console.log(r);
             }
         })
     }
@@ -53,10 +52,14 @@ export default function FlashCardDeck({flashCardData}) {
         }
     }, [flashCardData]);
 
+    if (flashCardData && currentFlashCardIndex >= flashCardData.length) {
+        deckFinished()
+    }
+
     return (
         <div style={{width: "350px", margin: "auto"}}>
             {currentFlashCard === null ?
-                <div></div>:
+                <div><CircularProgress /></div>:
                 <div>
                     <div style={{display: "flex", padding: "10px", gap: "20px"}}>
                         <Typography variant="h6">{currentFlashCardIndex+1}/{flashCardData.length}</Typography>

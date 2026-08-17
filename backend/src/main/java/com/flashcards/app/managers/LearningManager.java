@@ -22,4 +22,12 @@ public class LearningManager {
     public List<FlashCardData> getFlashCardsWithPriority(long collectionId) {
         return learningDao.getFlashCardsWithPriority(collectionId);
     }
+
+    public List<FlashCardData> getFlashCardsDaily(long collectionId) {
+        return learningDao.getFlashCardsDaily(collectionId);
+    }
+
+    public List<FlashCardData> getFlashCardsRandom(long collectionId) {
+        return learningDao.getFlashCardsRandom(collectionId);
+    }
 }
