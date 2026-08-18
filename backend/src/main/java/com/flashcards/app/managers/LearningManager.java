@@ -26,6 +26,12 @@ public class LearningManager {
         return learningDao.getLearningInstanceCards(learningInstanceId);
     }
 
+    public int getLearningInstanceSize(long collectionId, String learningType) {
+        LearningType type = LearningType.valueOf(learningType.toUpperCase(Locale.ROOT));
+        boolean ignoreSeenToday = (type == LearningType.DAILY);
+        return learningDao.getLearningInstanceSize(collectionId, ignoreSeenToday);
+    }
+
     public long createLearningInstance(long collectionId, String learningType, int startIndex, int endIndex) {
 
         LearningType type = LearningType.valueOf(learningType.toUpperCase(Locale.ROOT));

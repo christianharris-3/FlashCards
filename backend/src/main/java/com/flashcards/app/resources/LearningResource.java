@@ -8,6 +8,7 @@ import com.flashcards.app.models.dao.FlashCardInLearningInstance;
 import com.flashcards.app.models.requests.AddFlashCardLogRequest;
 import com.flashcards.app.models.requests.CreateLearningInstanceRequest;
 import com.flashcards.app.models.response.CreateLearningInstanceResponse;
+import com.flashcards.app.models.response.IntValueResponse;
 import io.dropwizard.auth.Auth;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -49,6 +50,19 @@ public class LearningResource {
         userValidationManager.validateUserHasLearningInstance(user, learningInstanceId);
         List<FlashCardInLearningInstance> cards = learningManager.getLearningInstanceCards(learningInstanceId);
         return Response.accepted(cards).build();
+    }
+
+    @GET
+    @Path("/create/{learningType}/{collectionId}")
+    public Response getLearningInstanceSize(@Auth User user,
+                                           @PathParam("learningType") String learningType,
+                                           @PathParam("collectionId") long collectionId
+    ) {
+        userValidationManager.validateUserHasCollection(user, collectionId);
+        int numCards = learningManager.getLearningInstanceSize(collectionId, learningType);
+        return Response.accepted(
+                new IntValueResponse(numCards)
+        ).build();
     }
 
     @POST

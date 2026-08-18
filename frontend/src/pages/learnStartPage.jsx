@@ -35,8 +35,9 @@ export default function LearnStartPage() {
 
     const [rangeSliderValue, setRangeSliderValue] = useState([100, 200]);
     const [rangeSliderDisabled, setRangeSliderDisabled] = useState(false);
+    const [rangeSliderMarks, setRangeSliderMarks] = useState(false);
+    const [totalCards, setTotalCards] = useState(500);
     const rangeMinDistance = 25;
-    const totalCards = 500;
 
 
     const selectionsWithRangeUI = ["Priority", "In Order"];
@@ -59,6 +60,39 @@ export default function LearnStartPage() {
         });
     }, []);
 
+    function getLearningApiParams() {
+        if (showRangeUi) {
+            return {
+                startIndex: rangeSliderValue[0],
+                endIndex: rangeSliderValue[1]
+            }
+        }
+        return {
+            startIndex: 0,
+            endIndex: rangeSliderValue[0]
+        };
+    }
+    function getLearningApiUrl() {
+        return `/api/learn/create/${selectedLearnType.toLowerCase().replace(" ", "")}/${collectionSelected}`
+    }
+
+    useEffect(() => {
+        fetch(getLearningApiUrl(), {
+            method: "GET",
+            headers: getHeadersJson()
+        }).then(r => {
+            if (validateResponse(r, navigate)) {
+                return r.json().then(json => {
+                    setTotalCards(json.value);
+                    setRangeSliderMarks([
+                        {value: 0, label: "0"},
+                        {value: json.value, label: json.value.toString()}
+                    ])
+                })
+            }
+        });
+    }, [selectedLearnType, collectionSelected]);
+
     function handleChangeSelection(event) {
         setCollectionSelected(event.target.value)
     }
@@ -72,20 +106,10 @@ export default function LearnStartPage() {
     }
 
     function handleStartPressed() {
-        let params = {
-            startIndex: 0,
-            endIndex: rangeSliderValue[0]
-        };
-        if (showRangeUi) {
-            params = {
-                startIndex: rangeSliderValue[0],
-                endIndex: rangeSliderValue[1]
-            }
-        }
-        fetch(`/api/learn/create/${selectedLearnType.toLowerCase().replace(" ", "")}/${collectionSelected}`, {
+        fetch(getLearningApiUrl(), {
             method: "POST",
             headers: getHeadersJson(),
-            body: JSON.stringify(params)
+            body: JSON.stringify(getLearningApiParams())
         }).then(r => {
             if (validateResponse(r, navigate)) {
                 r.json().then(json => {
@@ -112,7 +136,7 @@ export default function LearnStartPage() {
         setNumCards(event.target.value);
         if (event.target.value === "All") {
             setRangeSliderValue([totalCards, rangeSliderValue[1]]);
-        } else {
+        } else if (event.target.value !== "Custom"){
             setRangeSliderValue([parseInt(event.target.value), rangeSliderValue[1]]);
         }
     }
@@ -227,7 +251,7 @@ export default function LearnStartPage() {
                                 step={rangeMinDistance}
                                 min={0}
                                 max={totalCards}
-                                marks
+                                marks={rangeSliderMarks}
                                 disableSwap
                                 disabled={rangeSliderDisabled}
                         />
@@ -246,13 +270,11 @@ export default function LearnStartPage() {
                                         labelId="numCardsSelectionLabel"
                                         onChange={handChangeNumCardsFixed}
                                 >
-                                    {numCardsOptions.map((item) => {
-                                        if (item !== "Custom") {
-                                            return (<MenuItem value={item}>
-                                                        {item}
-                                                    </MenuItem>)
-                                        }
-                                    })}
+                                    {numCardsOptions.map((item) =>
+                                            <MenuItem value={item}>
+                                                {item}
+                                            </MenuItem>
+                                    )}
                                 </Select>
                             </FormControl>
                         </div>
@@ -262,7 +284,7 @@ export default function LearnStartPage() {
                                 step={rangeMinDistance}
                                 min={0}
                                 max={totalCards}
-                                marks
+                                marks={rangeSliderMarks}
                                 disableSwap
                                 disabled={rangeSliderDisabled}
                         />

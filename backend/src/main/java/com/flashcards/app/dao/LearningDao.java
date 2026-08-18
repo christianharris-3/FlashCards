@@ -49,7 +49,7 @@ public interface LearningDao {
             )
             SELECT flashCardId, :learningInstanceId, ROW_NUMBER() OVER (ORDER BY priority), false
             FROM FlashCardsWithPriority
-            WHERE collectionID = :collectionId AND NOT FlashCardsWithPriority.seenToday
+            WHERE collectionID = :collectionId AND NOT seenToday
             LIMIT :limit OFFSET :offset;
             """)
     void populateLearningInstanceDaily(@Bind("learningInstanceId") long learningInstanceId,
@@ -110,4 +110,14 @@ public interface LearningDao {
                          @Bind("timestamp") Timestamp timestamp,
                          @Bind("timeTakenMs") Integer timeTakenMs,
                          @Bind("userFeedback") Integer userFeedback);
+
+    @SqlQuery("""
+            SELECT COUNT(*)
+            FROM FlashCardsWithPriority
+            WHERE collectionId = :collectionId
+            AND (NOT seenToday OR NOT :ignoreSeenToday);
+            """)
+    int getLearningInstanceSize(@Bind("collectionId") long collectionId,
+                                 @Bind("ignoreSeenToday") boolean ignoreSeenToday
+    );
 }
