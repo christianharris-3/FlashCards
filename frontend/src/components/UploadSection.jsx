@@ -1,10 +1,12 @@
 import {Alert, Button, Chip, CircularProgress, Typography} from "@mui/material";
 import {useState} from "react";
 import {AttachFile, UploadFile} from "@mui/icons-material";
-import {getHeaders} from "../utils/utils.js";
+import {getHeaders, validateResponse} from "../utils/utils.js";
 import {useDropzone} from "react-dropzone";
+import {useNavigate} from "react-router-dom";
 
 export default function UploadSection({triggerDataReload, ...props}) {
+    const navigate = useNavigate();
     const [zipFile, setZipFile] = useState(null);
     const [fileProcessing, setFileProcessing] = useState(false);
     const [fileProcessed, setFileProcessed] = useState(false);

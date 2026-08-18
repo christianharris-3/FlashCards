@@ -1,8 +1,10 @@
 import {TableCell, TableRow} from "@mui/material";
-import {getHeadersJson} from "../utils/utils.js";
+import {getHeadersJson, validateResponse} from "../utils/utils.js";
 import EditableText from "./EditableText.jsx";
+import {useNavigate} from "react-router-dom";
 
 export default function FlashCardRow({row, triggerReload, reloadKey}) {
+    const navigate = useNavigate();
 
     function saveIndex(newIndex, row) {
         return fetch(`/api/flashcard/${row.flashCardId}`, {
@@ -49,24 +51,24 @@ export default function FlashCardRow({row, triggerReload, reloadKey}) {
 
 
     return (
-        <TableRow hover key={`flashCardRow${row.flashCardId}-${reloadKey}`}>
+        <TableRow hover key={`flashCardRow${row.collectionPosition}-${row.flashCardId}-${reloadKey}`}>
             <TableCell size="small"><EditableText
                 defaultText={row.collectionPosition}
                 row={row}
                 saveFunc={saveIndex}
-                htmlKey={`textInputIndex${row.flashCardId}-${reloadKey}`}
+                htmlKey={`textInputIndex${row.collectionPosition}-${row.flashCardId}-${reloadKey}`}
             /></TableCell>
             <TableCell size="small"><EditableText
                 defaultText={row.frontText}
                 row={row}
                 saveFunc={saveFrontText}
-                htmlKey={`textInputFrontText${row.flashCardId}-${reloadKey}`}
+                htmlKey={`textInputFrontText${row.collectionPosition}-${row.flashCardId}-${reloadKey}`}
             /></TableCell>
             <TableCell size="small"><EditableText
                 defaultText={row.backText}
                 row={row}
                 saveFunc={saveBackText}
-                htmlKey={`textInputBackText${row.flashCardId}-${reloadKey}`}
+                htmlKey={`textInputBackText${row.collectionPosition}-${row.flashCardId}-${reloadKey}`}
             /></TableCell>
         </TableRow>
     )

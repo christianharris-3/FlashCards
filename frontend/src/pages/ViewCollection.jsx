@@ -1,5 +1,5 @@
-import {useParams} from "react-router-dom";
-import {getHeaders, msPlayedToString} from "../utils/utils.js";
+import {useNavigate, useParams} from "react-router-dom";
+import {getHeaders, msPlayedToString, validateResponse} from "../utils/utils.js";
 import {
     CircularProgress,
     Paper,
@@ -14,6 +14,7 @@ import {useEffect, useState} from "react";
 import FlashCardRow from "../components/FlashCardRow.jsx";
 
 export default function ViewCollection() {
+    const navigate = useNavigate();
     const {collectionId} = useParams();
     const [reloadTrigger, setReloadTrigger] = useState(0);
     const [collectionData, setCollectionData] = useState(null);
@@ -27,6 +28,7 @@ export default function ViewCollection() {
         }).then(r => {
             if (validateResponse(r, navigate)) {
                 r.json().then(json => {
+                    console.log(json)
                     setCollectionData(json);
                 })
             }

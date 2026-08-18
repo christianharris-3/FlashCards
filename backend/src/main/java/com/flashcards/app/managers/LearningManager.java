@@ -39,8 +39,7 @@ public class LearningManager {
         LearningType type = LearningType.valueOf(learningType.toUpperCase(Locale.ROOT));
         int limit = endIndex - startIndex;
 
-        long learningInstanceId = learningDao.createLearningInstance(collectionId);
-        System.out.println("CREATINg "+startIndex+" - "+limit+" - "+type+" collecitonId "+collectionId+" id "+learningInstanceId);
+        long learningInstanceId = learningDao.createLearningInstance(collectionId, learningType, startIndex, endIndex);
 
         switch (type) {
             case DAILY -> learningDao.populateLearningInstanceDaily(

@@ -38,7 +38,7 @@ export default function Register() {
             },
             body: JSON.stringify({username: username, password: password1})
         }).then(r => {
-            if (validateResponse(r, navigate)) {
+            if (r.ok) {
                 navigate("/login");
             } else {
                 setInvalidUsernameError(true);

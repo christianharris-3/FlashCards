@@ -88,7 +88,7 @@ public interface FlashCardDao {
                 SELECT flashCardId, collectionPosition, (flashCardId = :fixedFlashCardId) AS isFixed
                 FROM FlashCard WHERE (collectionId = :collectionId)
             ), ReorderData AS (
-                SELECT flashCardId, ROW_NUMBER() OVER (ORDER BY collectionPosition ASC, isFixed DESC) AS newCollectionPosition
+                SELECT flashCardId, ROW_NUMBER() OVER (ORDER BY collectionPosition ASC, isFixed ASC) AS newCollectionPosition
                 FROM FlashCardsWithFixed
             )
             UPDATE FlashCard original

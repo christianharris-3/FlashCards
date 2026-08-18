@@ -25,6 +25,21 @@ export default function LearnFlashCardPage() {
         })
     }, []);
 
+    useEffect(() => {
+        if (deckComplete) {
+            fetch(`/api/learn/data/${learningInstanceId}`, {
+                fetch: "GET",
+                headers: getHeaders()
+            }).then(r => {
+                if (validateResponse(r, navigate)) {
+                    r.json().then(json => {
+                        console.log("finished Data", json)
+                    })
+                }
+            })
+        }
+    }, [deckComplete])
+
     function deckFinished() {
         setDeckComplete(true);
     }

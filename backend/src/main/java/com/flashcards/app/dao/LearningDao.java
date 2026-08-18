@@ -18,13 +18,24 @@ public interface LearningDao {
     @SqlUpdate("""
             INSERT INTO LearningInstance (
                 collectionId,
-                startedTimestamp
+                startedTimestamp,
+                complete,
+                learningType,
+                collectionStartIndex,
+                collectionEndIndex
             ) VALUES (
                 :collectionId,
-                NOW()
+                NOW(),
+                false,
+                :learningType,
+                :collectionStartIndex,
+                :collectionEndIndex
             );
             """)
-    long createLearningInstance(@Bind("collectionId") long collectionId);
+    long createLearningInstance(@Bind("collectionId") long collectionId,
+                                @Bind("learningType") String learningType,
+                                @Bind("collectionStartIndex") int collectionStartIndex,
+                                @Bind("collectionEndIndex") int collectionEndIndex);
 
     @RegisterBeanMapper(FlashCardInLearningInstance.class)
     @SqlQuery("""
@@ -54,9 +65,9 @@ public interface LearningDao {
             LIMIT :limit OFFSET :offset;
             """)
     void populateLearningInstanceDaily(@Bind("learningInstanceId") long learningInstanceId,
-                                        @Bind("collectionId") long collectionId,
-                                        @Bind("limit") int limit,
-                                        @Bind("offset") int offset);
+                                       @Bind("collectionId") long collectionId,
+                                       @Bind("limit") int limit,
+                                       @Bind("offset") int offset);
 
     @SqlUpdate("""
             INSERT INTO FlashCardUse (
@@ -82,9 +93,9 @@ public interface LearningDao {
             LIMIT :limit OFFSET :offset;
             """)
     void populateLearningInstanceInOrder(@Bind("learningInstanceId") long learningInstanceId,
-                                        @Bind("collectionId") long collectionId,
-                                        @Bind("limit") int limit,
-                                        @Bind("offset") int offset);
+                                         @Bind("collectionId") long collectionId,
+                                         @Bind("limit") int limit,
+                                         @Bind("offset") int offset);
 
     @SqlUpdate("""
             INSERT INTO FlashCardUse (
@@ -120,23 +131,30 @@ public interface LearningDao {
             AND (NOT seenToday OR NOT :ignoreSeenToday);
             """)
     int getLearningInstanceSize(@Bind("collectionId") long collectionId,
-                                 @Bind("ignoreSeenToday") boolean ignoreSeenToday
+                                @Bind("ignoreSeenToday") boolean ignoreSeenToday
     );
 
     @RegisterBeanMapper(LearningInstanceData.class)
     @SqlQuery("""
             SELECT
-                SUM(complete) as cardsDone,
+                Collection.collectionName as collectionName,
+                LearningInstance.learningType as learningType,
+                LearningInstance.collectionStartIndex as collectionStartIndex,
+                LearningInstance.collectionEndIndex as collectionEndIndex,
+                SUM(FlashCardUse.complete) as cardsDone,
                 COUNT(*) as totalCards,
-                MIN(timestamp) as startTime,
-                MAX(timestamp) as finishTime,
-                SUM(timeTakenMs) as totalTimeTakenMs,
-                SUM(userFeedback = 1) as totalGood,
-                SUM(userFeedback = 0) as totalOkay,
-                SUM(userFeedback = -1) as totalBad
-            FROM FlashCardsUse
-            WHERE learningInstanceId = :learningInstanceId
-            GROUP BY learningInstanceId;
+                MIN(FlashCardUse.timestamp) as startTime,
+                MAX(FlashCardUse.timestamp) as endTime,
+                SUM(FlashCardUse.timeTakenMs) as totalTimeTakenMs,
+                SUM(FlashCardUse.userFeedback = 1) as totalGood,
+                SUM(FlashCardUse.userFeedback = 0) as totalOkay,
+                SUM(FlashCardUse.userFeedback = -1) as totalBad
+            FROM FlashCardUse LEFT JOIN LearningInstance
+            ON LearningInstance.learningInstanceId = FlashCardUse.learningInstanceId
+            AND FlashCardUse.learningInstanceId = :learningInstanceId
+            LEFT JOIN Collection
+            ON Collection.collectionId = LearningInstance.collectionId
+            GROUP BY FlashCardUse.learningInstanceId;
             """)
     Optional<LearningInstanceData> getLearningInstanceData(@Bind("learningInstanceId") long learningInstanceId);
 }

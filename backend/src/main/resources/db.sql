@@ -50,7 +50,11 @@ CREATE TABLE LearningInstance(
     learningInstanceId BIGINT PRIMARY KEY AUTO_INCREMENT,
     collectionId BIGINT NOT NULL,
     startedTimestamp TIMESTAMP,
-    endTimestamp TIMESTAMP
+    endTimestamp TIMESTAMP,
+    complete BOOLEAN,
+    learningType VARCHAR(20),
+    collectionStartIndex INT,
+    collectionEndIndex INT
 );
 
 CREATE VIEW FlashCardsWithPriority AS SELECT

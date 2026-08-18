@@ -56,6 +56,8 @@ export default function LearnStartPage() {
                     setCollectionList(json);
                     setCollectionSelected(json[0]?.collectionId);
                 });
+            } else {
+                setCollectionList([])
             }
         });
     }, []);
@@ -77,12 +79,15 @@ export default function LearnStartPage() {
     }
 
     useEffect(() => {
+        if (collectionSelected === null) {
+            return
+        }
         fetch(getLearningApiUrl(), {
             method: "GET",
             headers: getHeadersJson()
         }).then(r => {
             if (validateResponse(r, navigate)) {
-                return r.json().then(json => {
+                r.json().then(json => {
                     setTotalCards(json.value);
                     setRangeSliderMarks([
                         {value: 0, label: "0"},
@@ -174,6 +179,15 @@ export default function LearnStartPage() {
     let realNumCards = rangeSliderValue[0];
     if (showRangeUi) {
         realNumCards = rangeSliderValue[1]-rangeSliderValue[0]
+    }
+
+    if (collectionList === []) {
+        return (
+            <div className="page">
+                No Collections Found
+                <Button onClick={() => {navigate("/collections")}}>Upload Collections</Button>
+            </div>
+        )
     }
 
     return (
