@@ -9,7 +9,7 @@ import {
     Stack,
     Typography
 } from "@mui/material";
-import {getHeaders, getHeadersJson} from "../utils/utils.js";
+import {getHeaders, getHeadersJson, validateResponse} from "../utils/utils.js";
 import FlashCard from "../components/FlashCard/FlashCard.jsx";
 import {useEffect, useState} from "react";
 import FlashCardDeck from "../components/FlashCardDeck.jsx";
@@ -30,23 +30,32 @@ export default function LearnStartPage() {
     const [collectionList, setCollectionList] = useState(null);
     const [collectionSelected, setCollectionSelected] = useState(null);
 
-    const [numCards, setNumCards] = useState("Custom")
+    const [numCards, setNumCards] = useState("100")
     const numCardsOptions = ["25", "50", "100", "200", "All", "Custom"]
 
-    const [rangeSliderValue, setRangeSliderValue] = useState([0, 100]);
+    const [rangeSliderValue, setRangeSliderValue] = useState([100, 200]);
     const [rangeSliderDisabled, setRangeSliderDisabled] = useState(false);
     const rangeMinDistance = 25;
     const totalCards = 500;
 
-    const showRangeUi = ["Priority", "In Order"].includes(selectedLearnType);
+
+    const selectionsWithRangeUI = ["Priority", "In Order"];
+    const showRangeUi = selectionsWithRangeUI.includes(selectedLearnType);
+    if (!showRangeUi && rangeSliderDisabled) {
+        setRangeSliderDisabled(false)
+    }
 
     useEffect(() => {
         fetch("/api/collections", {
             method: "GET",
             headers: getHeaders()
-        }).then(r => r.json()).then(json => {
-            setCollectionList(json);
-            setCollectionSelected(json[0]?.collectionId);
+        }).then(r => {
+            if (validateResponse(r, navigate)) {
+                r.json().then(json => {
+                    setCollectionList(json);
+                    setCollectionSelected(json[0]?.collectionId);
+                });
+            }
         });
     }, []);
 
@@ -54,16 +63,31 @@ export default function LearnStartPage() {
         setCollectionSelected(event.target.value)
     }
 
+    function setLearningType(newLearningType) {
+        setSelectedLearnType(newLearningType);
+        if (selectionsWithRangeUI.includes(newLearningType)) {
+            setNumCards("Custom")
+        }
+        clampRangeSlider(rangeSliderValue, 0, Math.max(rangeSliderValue[1]-rangeSliderValue[0], 25))
+    }
+
     function handleStartPressed() {
+        let params = {
+            startIndex: 0,
+            endIndex: rangeSliderValue[0]
+        };
+        if (showRangeUi) {
+            params = {
+                startIndex: rangeSliderValue[0],
+                endIndex: rangeSliderValue[1]
+            }
+        }
         fetch(`/api/learn/create/${selectedLearnType.toLowerCase().replace(" ", "")}/${collectionSelected}`, {
             method: "POST",
             headers: getHeadersJson(),
-            body: JSON.stringify({
-                start: rangeSliderValue[0],
-                end: rangeSliderValue[1]
-            })
+            body: JSON.stringify(params)
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 r.json().then(json => {
                     navigate(`/learn/${json.learningInstanceId}`)
                 })
@@ -84,6 +108,15 @@ export default function LearnStartPage() {
         }
     }
 
+    function handChangeNumCardsFixed(event) {
+        setNumCards(event.target.value);
+        if (event.target.value === "All") {
+            setRangeSliderValue([totalCards, rangeSliderValue[1]]);
+        } else {
+            setRangeSliderValue([parseInt(event.target.value), rangeSliderValue[1]]);
+        }
+    }
+
     function handleChangeRangeSlider(event, value, activeThumb) {
         if (numCards === "Custom") {
             if (value[1] - value[0] < rangeMinDistance) {
@@ -97,7 +130,14 @@ export default function LearnStartPage() {
         }
     }
 
+    function handleChangeRange(event, value) {
+        setRangeSliderValue([value, rangeSliderValue[1]])
+    }
+
     function clampRangeSlider(value, activeThumb, rangeDiff) {
+        if (value[0]>value[1]) {
+            value = [value[1], value[0]]
+        }
         if (activeThumb === 0) {
             const clamped = Math.min(value[0], totalCards - rangeDiff);
             setRangeSliderValue([clamped, clamped + rangeDiff]);
@@ -105,6 +145,11 @@ export default function LearnStartPage() {
             const clamped = Math.max(value[1], rangeDiff);
             setRangeSliderValue([clamped - rangeDiff, clamped]);
         }
+    }
+
+    let realNumCards = rangeSliderValue[0];
+    if (showRangeUi) {
+        realNumCards = rangeSliderValue[1]-rangeSliderValue[0]
     }
 
     return (
@@ -134,21 +179,31 @@ export default function LearnStartPage() {
                         </Select>
                     </FormControl>
                 }
-                <div>
+                <Paper style={{padding: "15px", display: "flex", flexDirection: "column", gap: "10px"}}>
+                    <Typography variant="h5">
+                        Deck Type
+                    </Typography>
                     <Selector items={learnTypes}
                               selectedValue={selectedLearnType}
-                              setSelectedValue={setSelectedLearnType}
-                              style={{marginBottom: "10px"}}
+                              setSelectedValue={setLearningType}
                     />
                     <Typography variant="body">
                         {learnDescriptions[selectedLearnType]}
                     </Typography>
-                </div>
-                {showRangeUi &&
-                    <div style={{paddingTop: "15px"}}>
-                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                </Paper>
+                <Paper style={{padding: "15px"}}>
+                    <Typography variant="h5">
+                        Cards In Deck
+                    </Typography>
+                {showRangeUi ?
+                    <div>
+                        <Typography>
+                            Number of cards: {rangeSliderValue[1]-rangeSliderValue[0]}
+                        </Typography>
+
+                        <div style={{display: "flex", justifyContent: "space-between", marginTop: "-40px"}}>
                             <Typography variant="body" style={{alignContent: "center"}}>
-                                Range In Card Deck: {rangeSliderValue[0]} - {rangeSliderValue[1]}
+                                Range: {rangeSliderValue[0]} - {rangeSliderValue[1]}
                             </Typography>
                             <FormControl variant="outlined" size="small" style={{minWidth: "150px"}} aria-label="numCardsSelection">
                                 <InputLabel id="numCardsSelectionLabel">Num Cards</InputLabel>
@@ -176,13 +231,50 @@ export default function LearnStartPage() {
                                 disableSwap
                                 disabled={rangeSliderDisabled}
                         />
+                    </div>:
+                    <div>
+                        <Typography>
+                            Number of cards: {rangeSliderValue[0]}
+                        </Typography>
+                        {/*this is straight copy pasted but oh well*/}
+                        <div style={{display: "flex", justifyContent: "right", marginTop: "-40px"}}>
+                            <FormControl variant="outlined" size="small" style={{minWidth: "150px"}} aria-label="numCardsSelection">
+                                <InputLabel id="numCardsSelectionLabel">Num Cards</InputLabel>
+                                <Select variant="outlined"
+                                        value={numCards}
+                                        label="numCards"
+                                        labelId="numCardsSelectionLabel"
+                                        onChange={handChangeNumCardsFixed}
+                                >
+                                    {numCardsOptions.map((item) => {
+                                        if (item !== "Custom") {
+                                            return (<MenuItem value={item}>
+                                                        {item}
+                                                    </MenuItem>)
+                                        }
+                                    })}
+                                </Select>
+                            </FormControl>
+                        </div>
+
+                        <Slider onChange={handleChangeRange}
+                                value={rangeSliderValue[0]}
+                                step={rangeMinDistance}
+                                min={0}
+                                max={totalCards}
+                                marks
+                                disableSwap
+                                disabled={rangeSliderDisabled}
+                        />
                     </div>
                 }
+                </Paper>
 
                 <Button variant="contained"
                         style={{width: "200px", margin: "auto"}}
                         size="large"
                         onClick={handleStartPressed}
+                        disabled={realNumCards === 0}
                 >Start</Button>
             </div>
         </div>

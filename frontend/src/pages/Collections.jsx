@@ -60,7 +60,7 @@ export default function Collections() {
             headers: getHeadersJson(),
             body: JSON.stringify({collectionName: newCollectionName})
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 row.collectionName = newCollectionName;
                 return true;
             } else {

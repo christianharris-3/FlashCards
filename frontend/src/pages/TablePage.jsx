@@ -60,7 +60,7 @@ export default function TablePage() {
             headers: getHeaders()
         })
             .then(r => {
-                if (r.ok) {
+                if (validateResponse(r, navigate)) {
                     r.json().then(json => {
                         setTableData(json);
                     })

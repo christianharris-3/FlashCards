@@ -13,5 +13,5 @@ public class FlashCardHistory {
     private int collectionPosition;
     private String frontText;
     private String backText;
-    private List<FlashCardLog> logs;
+    private List<FlashCardUse> logs;
 }

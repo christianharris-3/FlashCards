@@ -44,7 +44,7 @@ export default function UploadSection({triggerDataReload, ...props}) {
             headers: getHeaders()
         }).then(r => {
             setFileProcessed(true);
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 setFileValid(true);
                 triggerDataReload()
             } else {

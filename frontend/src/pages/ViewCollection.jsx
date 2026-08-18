@@ -25,7 +25,7 @@ export default function ViewCollection() {
             method: "GET",
             headers: getHeaders()
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 r.json().then(json => {
                     setCollectionData(json);
                 })

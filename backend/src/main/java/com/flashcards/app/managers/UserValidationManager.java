@@ -5,6 +5,7 @@ import com.flashcards.app.dao.FlashCardDao;
 import com.flashcards.app.exceptions.CollectionNotOwnedException;
 import com.flashcards.app.models.User;
 import com.flashcards.app.models.dao.FlashCard;
+import com.flashcards.app.models.dao.FlashCardUserValidation;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,5 +40,15 @@ public class UserValidationManager {
         if (userId.isEmpty() || userId.get() != user.getUserId()) {
             throw new CollectionNotOwnedException();
         }
+    }
+
+    public void validateUserHasFlashCardUse(User user, long flashCardUseId) throws CollectionNotOwnedException {
+        Optional<FlashCardUserValidation> flashCardUse = authDao.getFlashCardUseById(flashCardUseId);
+        if (flashCardUse.isPresent()) {
+            if (!flashCardUse.get().isComplete() && flashCardUse.get().getUserId() == user.getUserId()) {
+                return;
+            }
+        }
+        throw new CollectionNotOwnedException();
     }
 }

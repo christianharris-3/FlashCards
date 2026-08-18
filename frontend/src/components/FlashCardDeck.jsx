@@ -1,10 +1,11 @@
 import FlashCard from "./FlashCard/FlashCard.jsx";
 import {Button, CircularProgress, Slider, Typography} from "@mui/material";
 import {useEffect, useState} from "react";
-import {getHeadersJson, toDateString} from "../utils/utils.js";
+import {getHeadersJson, toDateString, validateResponse} from "../utils/utils.js";
+import {useNavigate} from "react-router-dom";
 
 export default function FlashCardDeck({flashCardData, deckFinished}) {
-
+    const navigate = useNavigate();
     const [cardFlipped, setCardFlipped] = useState(false);
     const [currentFlashCard, setCurrentFlashCard] = useState(null);
     const [currentFlashCardIndex, setCurrentFlashCardIndex] = useState(0);
@@ -30,7 +31,7 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
         const timestamp = new Date();
         const timeTakenMs = Math.min(timestamp - prevSubmitTimestamp, 20000);
 
-        fetch(`/api/log-flashcard-use/${currentFlashCard.flashCardId}`, {
+        fetch(`/api/learn/log-flashcard-use/${currentFlashCard.flashCardId}`, {
             method: "POST",
             headers: getHeadersJson(),
             body: JSON.stringify({
@@ -39,7 +40,7 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
                 timeTakenMs: timeTakenMs
             })
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 setPrevSubmitTimestamp(timestamp);
                 nextFlashCard();
             }

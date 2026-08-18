@@ -47,7 +47,7 @@ public interface LearningDao {
             INSERT INTO FlashCardUse (
                 flashCardId, learningInstanceId, learningInstancePosition, complete
             )
-            SELECT flashCardId, learningInstanceId, ROW_NUMBER() OVER (ORDER BY priority), false
+            SELECT flashCardId, :learningInstanceId, ROW_NUMBER() OVER (ORDER BY priority), false
             FROM FlashCardsWithPriority
             WHERE collectionID = :collectionId AND NOT FlashCardsWithPriority.seenToday
             LIMIT :limit OFFSET :offset;
@@ -100,19 +100,13 @@ public interface LearningDao {
                                         @Bind("offset") int offset);
 
     @SqlUpdate("""
-            INSERT INTO FlashCardLog (
-                flashCardId,
-                timestamp,
-                timeTakenMs,
-                userFeedback
-            ) VALUES (
-                :flashCardId,
-                :timestamp,
-                :timeTakenMs,
-                :userFeedback
-            );
+            UPDATE FlashCardUse
+            SET timestamp = :timestamp,
+                timeTakenMs = :timeTakenMs,
+                userFeedback = :userFeedback
+            WHERE flashCardUseId = :flashCardUseId;
             """)
-    void addFlashCardLog(@Bind("flashCardId") long flashCardId,
+    void logFlashCardUse(@Bind("flashCardUseId") long flashCardUseId,
                          @Bind("timestamp") Timestamp timestamp,
                          @Bind("timeTakenMs") Integer timeTakenMs,
                          @Bind("userFeedback") Integer userFeedback);

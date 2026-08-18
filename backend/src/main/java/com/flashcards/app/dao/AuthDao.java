@@ -1,5 +1,6 @@
 package com.flashcards.app.dao;
 
+import com.flashcards.app.models.dao.FlashCardUserValidation;
 import com.flashcards.app.models.dao.UserFromDb;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
@@ -61,4 +62,15 @@ public interface AuthDao {
             WHERE LearningInstance.learningInstanceId = :learningInstanceId;
             """)
     Optional<Long> getLearningInstanceUserId(@Bind("learningInstanceId") long learningInstanceId);
+
+    @RegisterBeanMapper(FlashCardUserValidation.class)
+    @SqlQuery("""
+            SELECT Collection.userId as userId, FlashCardUse.complete as complete
+            FROM FlashCardUse JOIN FlashCard
+            ON FlashCardUse.flashCardId = FlashCard.flashCardId
+            AND FlashCardUse.flashCardUseId = :flashCardUseId
+            JOIN Collection
+            ON FlashCard.collectionId = Collection.collectionId;
+            """)
+    Optional<FlashCardUserValidation> getFlashCardUseById(@Bind("flashCardUseId") long flashCardUseId);
 }

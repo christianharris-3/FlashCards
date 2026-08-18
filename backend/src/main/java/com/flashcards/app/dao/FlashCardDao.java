@@ -1,7 +1,7 @@
 package com.flashcards.app.dao;
 
 import com.flashcards.app.models.dao.FlashCard;
-import com.flashcards.app.models.dao.FlashCardLog;
+import com.flashcards.app.models.dao.FlashCardUse;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.SqlQuery;
@@ -46,7 +46,7 @@ public interface FlashCardDao {
             FROM FlashCardLog
             WHERE (flashCardId = :flashCardId);
             """)
-    List<FlashCardLog> getFlashCardLogs(@Bind("flashCardId") long flashCardId);
+    List<FlashCardUse> getFlashCardLogs(@Bind("flashCardId") long flashCardId);
 
     @RegisterBeanMapper(FlashCard.class)
     @SqlQuery("""

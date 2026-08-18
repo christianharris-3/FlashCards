@@ -10,7 +10,7 @@ export default function FlashCardRow({row, triggerReload, reloadKey}) {
             headers: getHeadersJson(),
             body: JSON.stringify({collectionPosition: newIndex})
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 triggerReload()
                 return true;
             } else {
@@ -24,7 +24,7 @@ export default function FlashCardRow({row, triggerReload, reloadKey}) {
             headers: getHeadersJson(),
             body: JSON.stringify({frontText: newFrontText})
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 row.frontText = newFrontText;
                 return true;
             } else {
@@ -38,7 +38,7 @@ export default function FlashCardRow({row, triggerReload, reloadKey}) {
             headers: getHeadersJson(),
             body: JSON.stringify({backText: newBackText})
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 row.backText = newBackText;
                 return true;
             } else {

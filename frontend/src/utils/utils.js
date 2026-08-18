@@ -1,3 +1,4 @@
+import {useNavigate} from "react-router-dom";
 
 export function getHeaders() {
     let token = localStorage.getItem("authToken");
@@ -41,4 +42,13 @@ export function msPlayedToString(msPlayed) {
     }
     return `${hours}h ${minutes}m ${seconds}s`
 
+}
+
+export function validateResponse(response, navigate) {
+    if (response.ok) {
+        return true;
+    } else if (response.status === 401) {
+        navigate("/login");
+    }
+    return false;
 }

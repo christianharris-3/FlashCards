@@ -1,12 +1,12 @@
 import FlashCardDeck from "../components/FlashCardDeck.jsx";
 import {useEffect, useState} from "react";
-import {getHeaders} from "../utils/utils.js";
-import {useParams, useSearchParams} from "react-router-dom";
+import {getHeaders, validateResponse} from "../utils/utils.js";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 
 
 export default function LearnFlashCardPage() {
+    const navigate = useNavigate();
     const {learningInstanceId} = useParams();
-    const [searchParams, setSearchParams] = useSearchParams();
 
     const [collectionData, setCollectionData] = useState(null);
 
@@ -17,7 +17,7 @@ export default function LearnFlashCardPage() {
             fetch: "GET",
             headers: getHeaders()
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 r.json().then(json => {
                     setCollectionData(json)
                 })

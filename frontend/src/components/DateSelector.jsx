@@ -80,7 +80,7 @@ export const DateSelector = forwardRef((
             method: "GET",
             headers: getHeaders()
         }).then(r => {
-            if (r.ok) {
+            if (validateResponse(r, navigate)) {
                 r.json().then(json => {
                     let years = [];
                     let monthListData = {}
