@@ -4,11 +4,13 @@ import com.flashcards.app.dao.LearningDao;
 import com.flashcards.app.models.dao.FlashCard;
 import com.flashcards.app.models.dao.FlashCardData;
 import com.flashcards.app.models.dao.FlashCardInLearningInstance;
+import com.flashcards.app.models.dao.LearningInstanceData;
 import com.flashcards.app.models.enums.LearningType;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 public class LearningManager {
 
@@ -63,5 +65,9 @@ public class LearningManager {
                     startIndex);
         }
         return learningInstanceId;
+    }
+
+    public Optional<LearningInstanceData> getLearningInstanceData(long learningInstanceId) {
+        return learningDao.getLearningInstanceData(learningInstanceId);
     }
 }

@@ -1,8 +1,7 @@
 package com.flashcards.app.dao;
 
-import com.flashcards.app.models.dao.FlashCard;
-import com.flashcards.app.models.dao.FlashCardData;
 import com.flashcards.app.models.dao.FlashCardInLearningInstance;
+import com.flashcards.app.models.dao.LearningInstanceData;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys;
@@ -11,6 +10,7 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 public interface LearningDao {
 
@@ -35,7 +35,8 @@ public interface LearningDao {
                 FlashCardUse.learningInstanceId as learningInstanceId,
                 FlashCardUse.learningInstancePosition as positionIndex,
                 FlashCard.frontText as frontText,
-                FlashCard.backText as backText
+                FlashCard.backText as backText,
+                FlashCardUse.complete as complete
             FROM FlashCardUse LEFT JOIN FlashCard
             ON FlashCardUse.flashCardId = FlashCard.flashCardId
             WHERE FlashCardUse.learningInstanceId = :learningInstanceId
@@ -103,7 +104,8 @@ public interface LearningDao {
             UPDATE FlashCardUse
             SET timestamp = :timestamp,
                 timeTakenMs = :timeTakenMs,
-                userFeedback = :userFeedback
+                userFeedback = :userFeedback,
+                complete = true
             WHERE flashCardUseId = :flashCardUseId;
             """)
     void logFlashCardUse(@Bind("flashCardUseId") long flashCardUseId,
@@ -120,4 +122,21 @@ public interface LearningDao {
     int getLearningInstanceSize(@Bind("collectionId") long collectionId,
                                  @Bind("ignoreSeenToday") boolean ignoreSeenToday
     );
+
+    @RegisterBeanMapper(LearningInstanceData.class)
+    @SqlQuery("""
+            SELECT
+                SUM(complete) as cardsDone,
+                COUNT(*) as totalCards,
+                MIN(timestamp) as startTime,
+                MAX(timestamp) as finishTime,
+                SUM(timeTakenMs) as totalTimeTakenMs,
+                SUM(userFeedback = 1) as totalGood,
+                SUM(userFeedback = 0) as totalOkay,
+                SUM(userFeedback = -1) as totalBad
+            FROM FlashCardsUse
+            WHERE learningInstanceId = :learningInstanceId
+            GROUP BY learningInstanceId;
+            """)
+    Optional<LearningInstanceData> getLearningInstanceData(@Bind("learningInstanceId") long learningInstanceId);
 }

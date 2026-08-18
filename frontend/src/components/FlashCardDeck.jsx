@@ -15,6 +15,12 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
     function nextFlashCard() {
         let newIndex = currentFlashCardIndex + 1;
         setCardFlipped(false);
+
+        if (flashCardData && newIndex >= flashCardData.length) {
+            deckFinished()
+            return
+        }
+
         if (cardFlipped) {
             setTimeout(() => {
                 setCurrentFlashCard(flashCardData[newIndex]);
@@ -31,7 +37,7 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
         const timestamp = new Date();
         const timeTakenMs = Math.min(timestamp - prevSubmitTimestamp, 20000);
 
-        fetch(`/api/learn/log-flashcard-use/${currentFlashCard.flashCardId}`, {
+        fetch(`/api/learn/log-flashcard-use/${currentFlashCard.flashCardUseId}`, {
             method: "POST",
             headers: getHeadersJson(),
             body: JSON.stringify({
@@ -49,13 +55,18 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
 
     useEffect(() => {
         if (flashCardData !== null) {
-            setCurrentFlashCard(flashCardData[0]);
+            let newIndex = 0;
+            while (newIndex < flashCardData.length && flashCardData[newIndex].complete) {
+                newIndex += 1;
+            }
+            if (newIndex >= flashCardData.length) {
+                deckFinished()
+                return
+            }
+            setCurrentFlashCard(flashCardData[newIndex]);
+            setCurrentFlashCardIndex(newIndex);
         }
     }, [flashCardData]);
-
-    if (flashCardData && currentFlashCardIndex >= flashCardData.length) {
-        deckFinished()
-    }
 
     return (
         <div style={{width: "350px", margin: "auto"}}>

@@ -5,6 +5,7 @@ import com.flashcards.app.managers.UserValidationManager;
 import com.flashcards.app.models.User;
 import com.flashcards.app.models.dao.FlashCardData;
 import com.flashcards.app.models.dao.FlashCardInLearningInstance;
+import com.flashcards.app.models.dao.LearningInstanceData;
 import com.flashcards.app.models.requests.AddFlashCardLogRequest;
 import com.flashcards.app.models.requests.CreateLearningInstanceRequest;
 import com.flashcards.app.models.response.CreateLearningInstanceResponse;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("api/learn")
 @Produces(MediaType.APPLICATION_JSON)
@@ -50,6 +52,17 @@ public class LearningResource {
         userValidationManager.validateUserHasLearningInstance(user, learningInstanceId);
         List<FlashCardInLearningInstance> cards = learningManager.getLearningInstanceCards(learningInstanceId);
         return Response.accepted(cards).build();
+    }
+
+    @GET
+    @Path("/data/{learningInstanceId}")
+    public Response getLearningInstanceData(@Auth User user, @PathParam("learningInstanceId") long learningInstanceId) {
+        userValidationManager.validateUserHasLearningInstance(user, learningInstanceId);
+        Optional<LearningInstanceData> learningInstanceData = learningManager.getLearningInstanceData(learningInstanceId);
+        if (learningInstanceData.isPresent()) {
+            return Response.accepted(learningInstanceData).build();
+        }
+        return Response.status(400, "learning instance not found").build();
     }
 
     @GET

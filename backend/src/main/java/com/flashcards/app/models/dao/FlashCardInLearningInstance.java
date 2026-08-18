@@ -11,4 +11,5 @@ public class FlashCardInLearningInstance {
     private int positionIndex;
     private String frontText;
     private String backText;
+    private boolean complete;
 }
