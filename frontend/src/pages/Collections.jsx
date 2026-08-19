@@ -6,10 +6,10 @@ import {
     TableBody,
     TableCell,
     TableContainer,
-    TableHead, TableRow,
+    TableHead, TableRow, TextField,
     Typography
 } from "@mui/material";
-import {getHeaders, getHeadersJson} from "../utils/utils.js";
+import {getHeaders, getHeadersJson, validateResponse} from "../utils/utils.js";
 import {useNavigate} from "react-router-dom";
 import UploadSection from "../components/UploadSection.jsx";
 import {useEffect, useState} from "react";
@@ -22,24 +22,30 @@ export default function Collections() {
     const [triggerDataReload, setTriggerDataReload] = useState(1);
     const [selectedCollection, setSelectedCollection] = useState(null);
 
+    const [newCollectionText, setNewCollectionText] = useState("");
+
     useEffect(() => {
         fetch("/api/collections", {
             method: "GET",
             headers: getHeaders()
-        }).then(r => r.json()).then(json => {
-            if (json.length > 0) {
-                setSelectedCollection(json[0].collectionId);
+        }).then(r => {
+            if (validateResponse(r, navigate)) {
+                r.json().then(json => {
+                    if (json.length > 0) {
+                        setSelectedCollection(json[0].collectionId);
+                    }
+                    setCollectionItems(Object.fromEntries(
+                        json.map(item => [item.collectionId, item])
+                    ));
+                })
             }
-            setCollectionItems(Object.fromEntries(
-                json.map(item => [item.collectionId, item])
-            ));
-        });
+        })
     }, [triggerDataReload]);
 
     useEffect(() => {
         if (selectedCollection !== null && selectedCollection !== undefined) {
             localStorage.setItem("activeCollectionId", selectedCollection.toString())
-            fetch("/api/collections/select/"+selectedCollection, {
+            fetch("/api/collections/select/" + selectedCollection, {
                 method: "POST",
                 headers: getHeaders()
             }).then()
@@ -55,7 +61,7 @@ export default function Collections() {
     }
 
     function saveTitle(newCollectionName, row) {
-        return fetch("/api/collections/"+row.collectionId, {
+        return fetch("/api/collections/" + row.collectionId, {
             method: "PUT",
             headers: getHeadersJson(),
             body: JSON.stringify({collectionName: newCollectionName})
@@ -64,15 +70,35 @@ export default function Collections() {
                 row.collectionName = newCollectionName;
                 return true;
             } else {
-                console.log("failed to edit title", r);
                 return false;
+            }
+        })
+    }
+
+    function handleCreateCollection() {
+        fetch("/api/collections", {
+            method: "POST",
+            headers: getHeadersJson(),
+            body: JSON.stringify({collectionName: newCollectionText})
+        }).then(r => {
+            if (validateResponse(r, navigate)) {
+                setNewCollectionText("");
+                runTriggerDataReload();
             }
         })
     }
 
     return (
         <div className="page">
-            <div style={{textAlign: "center", maxWidth: "800px", margin: "auto", padding: "40px"}}>
+            <div style={{
+                textAlign: "center",
+                maxWidth: "800px",
+                margin: "auto",
+                padding: "40px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px"
+            }}>
                 <Paper style={{padding: "10px"}}>
                     <Typography sx={{margin: "20px"}} variant="h5">Upload Your Collection</Typography>
                     <Typography variant="body" style={{marginTop: "10px"}}>
@@ -81,47 +107,57 @@ export default function Collections() {
                     </Typography>
                     <UploadSection triggerDataReload={runTriggerDataReload}/>
                 </Paper>
-                <div style={{paddingTop: "30px"}}>
-                    <Paper style={{padding: "10px"}}>
-                        <Typography variant="h5">Your Collections</Typography>
-                        {collectionItems === null ?
-                            <div>Loading...</div> :
-                            <TableContainer>
-                                <Table>
-                                    <TableHead sx={{background: ""}}>
-                                        <TableRow>
-                                            <TableCell>Name</TableCell>
-                                            <TableCell style={{width: "100px"}} align="center">Items</TableCell>
-                                            <TableCell style={{width: "100px"}} align="center">View</TableCell>
-                                            <TableCell style={{width: "100px"}} align="center">Delete</TableCell>
+                <Paper style={{padding: "10px", paddingBottom: "20px"}}>
+                    <Typography sx={{margin: "10px"}} variant="h5">Create New Collection</Typography>
+                    <div style={{display: "flex", gap: "20px", justifyContent: "center"}}>
+                        <TextField size="small"
+                                   label="Collection Name"
+                                   onChange={(e) => {
+                                       setNewCollectionText(e.target.value)
+                                   }}/>
+                        <Button variant="outlined" onClick={handleCreateCollection}>Create</Button>
+                    </div>
+                </Paper>
+                <Paper style={{padding: "10px"}}>
+                    <Typography variant="h5">Your Collections</Typography>
+                    {collectionItems === null ?
+                        <div>Loading...</div> :
+                        <TableContainer>
+                            <Table>
+                                <TableHead sx={{background: ""}}>
+                                    <TableRow>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell style={{width: "100px"}} align="center">Items</TableCell>
+                                        <TableCell style={{width: "100px"}} align="center">View</TableCell>
+                                        <TableCell style={{width: "100px"}} align="center">Delete</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {Object.values(collectionItems).map((row) => (
+                                        <TableRow hover key={row.collectionId}>
+                                            <TableCell sx={{padding: "1px", paddingTop: "8px", width: "270px"}}>
+                                                <EditableText row={row}
+                                                              defaultText={row.collectionName}
+                                                              saveFunc={saveTitle}
+                                                              htmlKey={row.collectionId}
+                                                />
+                                            </TableCell>
+                                            <TableCell align="center">{row.itemCount}</TableCell>
+                                            <TableCell align="center">
+                                                <Button variant="outlined"
+                                                        onClick={() => navigate(`/collections/${row.collectionId}`)}>View</Button>
+                                            </TableCell>
+                                            <TableCell sx={{width: "50px"}} align="center">
+                                                <DeleteCollection collectionId={row.collectionId}
+                                                                  triggerDataReload={runTriggerDataReload}/>
+                                            </TableCell>
                                         </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {Object.values(collectionItems).map((row) => (
-                                            <TableRow hover key={row.collectionId}>
-                                                <TableCell sx={{padding: "1px", paddingTop: "8px", width: "270px"}}>
-                                                    <EditableText row={row}
-                                                                  defaultText={row.collectionName}
-                                                                  saveFunc={saveTitle}
-                                                                  htmlKey={row.collectionId}
-                                                    />
-                                                </TableCell>
-                                                <TableCell align="center">{row.itemCount}</TableCell>
-                                                <TableCell align="center">
-                                                    <Button variant="outlined" onClick={() => navigate(`/collections/${row.collectionId}`)}>View</Button>
-                                                </TableCell>
-                                                <TableCell sx={{width: "50px"}} align="center">
-                                                    <DeleteCollection collectionId={row.collectionId}
-                                                                      triggerDataReload={runTriggerDataReload}/>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        }
-                    </Paper>
-                </div>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    }
+                </Paper>
             </div>
         </div>
     )

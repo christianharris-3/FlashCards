@@ -74,6 +74,9 @@ public class CollectionManager {
         return collectionId;
     }
 
+    public long createCollection(long userId, String collectionName) {
+        return collectionDao.createCollection(userId, collectionName);
+    }
 
     private void storeFlashCard(long collectionId, String frontText, String backText) {
         flashCardDao.createFlashCard(

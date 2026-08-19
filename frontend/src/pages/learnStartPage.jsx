@@ -37,7 +37,8 @@ export default function LearnStartPage() {
     const [rangeSliderDisabled, setRangeSliderDisabled] = useState(false);
     const [rangeSliderMarks, setRangeSliderMarks] = useState(false);
     const [totalCards, setTotalCards] = useState(500);
-    const rangeMinDistance = 25;
+    const rangeMinDistanceConst = 25;
+    const [rangeMinDistance, setRangeMinDistance] = useState(rangeMinDistanceConst);
 
 
     const selectionsWithRangeUI = ["Priority", "In Order"];
@@ -89,6 +90,15 @@ export default function LearnStartPage() {
             if (validateResponse(r, navigate)) {
                 r.json().then(json => {
                     setTotalCards(json.value);
+                    let newRangeMinDistance = Math.min(rangeMinDistanceConst, json.value);
+                    setRangeMinDistance(newRangeMinDistance);
+                    if (showRangeUi) {
+                        clampRangeSlider(rangeSliderValue, 0, newRangeMinDistance, json.value);
+                    } else {
+                        if (rangeSliderValue[0] > json.value) {
+                            setRangeSliderValue([json.value, rangeSliderValue[1]])
+                        }
+                    }
                     setRangeSliderMarks([
                         {value: 0, label: "0"},
                         {value: json.value, label: json.value.toString()}
@@ -107,7 +117,7 @@ export default function LearnStartPage() {
         if (selectionsWithRangeUI.includes(newLearningType)) {
             setNumCards("Custom")
         }
-        clampRangeSlider(rangeSliderValue, 0, Math.max(rangeSliderValue[1]-rangeSliderValue[0], 25))
+        clampRangeSliderDefault(rangeSliderValue, 0, Math.max(rangeSliderValue[1]-rangeSliderValue[0], 25))
     }
 
     function handleStartPressed() {
@@ -132,7 +142,7 @@ export default function LearnStartPage() {
         } else {
             setRangeSliderDisabled(false);
             if (event.target.value !== "Custom") {
-                clampRangeSlider(rangeSliderValue, 0, parseInt(event.target.value));
+                clampRangeSliderDefault(rangeSliderValue, 0, parseInt(event.target.value));
             }
         }
     }
@@ -155,7 +165,7 @@ export default function LearnStartPage() {
             }
         } else if (numCards !== "All") {
             const intNumCards = parseInt(numCards);
-            clampRangeSlider(value, activeThumb, intNumCards)
+            clampRangeSliderDefault(value, activeThumb, intNumCards)
         }
     }
 
@@ -163,12 +173,16 @@ export default function LearnStartPage() {
         setRangeSliderValue([value, rangeSliderValue[1]])
     }
 
-    function clampRangeSlider(value, activeThumb, rangeDiff) {
+    function clampRangeSliderDefault(value, activeThumb, rangeDiff) {
+        clampRangeSlider(value, activeThumb, rangeDiff, totalCards)
+    }
+
+    function clampRangeSlider(value, activeThumb, rangeDiff, totalCardsVal) {
         if (value[0]>value[1]) {
             value = [value[1], value[0]]
         }
         if (activeThumb === 0) {
-            const clamped = Math.min(value[0], totalCards - rangeDiff);
+            const clamped = Math.min(value[0], totalCardsVal - rangeDiff);
             setRangeSliderValue([clamped, clamped + rangeDiff]);
         } else {
             const clamped = Math.max(value[1], rangeDiff);
@@ -181,11 +195,19 @@ export default function LearnStartPage() {
         realNumCards = rangeSliderValue[1]-rangeSliderValue[0]
     }
 
-    if (collectionList === []) {
+    if (Array.isArray(collectionList) && collectionList.length === 0) {
         return (
             <div className="page">
-                No Collections Found
-                <Button onClick={() => {navigate("/collections")}}>Upload Collections</Button>
+                <div style={{
+                    textAlign: "center", maxWidth: "700px", margin: "auto",
+                    padding: "40px", display: "flex", gap: "20px", flexDirection: "column"
+                }}>
+                    <Typography variant="h5"> No Collections Found </Typography>
+                    <Button variant="outlined"
+                            onClick={() => {navigate("/collections")}}
+                            style={{width: "fit-content", margin: "auto"}}
+                    >Create Collections</Button>
+                </div>
             </div>
         )
     }

@@ -151,10 +151,10 @@ public interface LearningDao {
                 SUM(FlashCardUse.userFeedback = -1) as totalBad
             FROM FlashCardUse LEFT JOIN LearningInstance
             ON LearningInstance.learningInstanceId = FlashCardUse.learningInstanceId
-            AND FlashCardUse.learningInstanceId = :learningInstanceId
             LEFT JOIN Collection
             ON Collection.collectionId = LearningInstance.collectionId
-            GROUP BY FlashCardUse.learningInstanceId;
+            WHERE LearningInstance.learningInstanceId = :learningInstanceId
+            GROUP BY LearningInstance.learningInstanceId;
             """)
     Optional<LearningInstanceData> getLearningInstanceData(@Bind("learningInstanceId") long learningInstanceId);
 }

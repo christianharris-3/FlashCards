@@ -6,6 +6,10 @@ import java.sql.Timestamp;
 
 @Data
 public class LearningInstanceData {
+    private String collectionName;
+    private String learningType;
+    private int collectionStartIndex;
+    private int collectionEndIndex;
     private int cardsDone;
     private int totalCards;
     private Timestamp startTime;

@@ -4,9 +4,11 @@ import com.flashcards.app.managers.CollectionManager;
 import com.flashcards.app.managers.UserValidationManager;
 import com.flashcards.app.models.User;
 import com.flashcards.app.models.dao.CollectionInfo;
+import com.flashcards.app.models.requests.CreateCollectionRequest;
 import com.flashcards.app.models.requests.UpdateCollectionRequest;
 import com.flashcards.app.models.response.CollectionData;
 import io.dropwizard.auth.Auth;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -22,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
-import java.util.zip.ZipInputStream;
 
 
 @Path("api/collections")
@@ -100,6 +101,13 @@ public class CollectionDataResource {
         }
 
         return Response.accepted(collectionId).build();
+    }
+
+    @POST
+    public Response createCollection(@Auth User user,
+                                     @Valid @NotNull CreateCollectionRequest request) {
+        long CollectionId = collectionManager.createCollection(user.getUserId(), request.getCollectionName());
+        return Response.accepted(CollectionId).build();
     }
 
 

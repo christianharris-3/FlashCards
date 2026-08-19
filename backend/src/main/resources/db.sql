@@ -1,4 +1,4 @@
-
+SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS Users;
 DROP TABLE IF EXISTS UserRole;
 DROP TABLE IF EXISTS Collection;
@@ -18,13 +18,19 @@ CREATE TABLE Users(
 CREATE TABLE UserRole(
     userId BIGINT,
     role VARCHAR(255),
-    PRIMARY KEY (userId, role)
+    PRIMARY KEY (userId, role),
+    FOREIGN KEY (userId) REFERENCES Users (userId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE Collection(
     collectionId BIGINT PRIMARY KEY AUTO_INCREMENT,
     collectionName VARCHAR(255),
-    userId BIGINT NOT NULL
+    userId BIGINT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES Users (userId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE FlashCard(
@@ -32,7 +38,10 @@ CREATE TABLE FlashCard(
     collectionId BIGINT NOT NULL,
     collectionPosition INT NOT NULL,
     frontText VARCHAR(1024) NOT NULL,
-    backText VARCHAR(1024) NOT NULL
+    backText VARCHAR(1024) NOT NULL,
+    FOREIGN KEY (collectionId) REFERENCES Collection (collectionId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE FlashCardUse(
@@ -43,7 +52,13 @@ CREATE TABLE FlashCardUse(
     complete BOOLEAN NOT NULL,
     timestamp TIMESTAMP,
     timeTakenMs INT,
-    userFeedback INT
+    userFeedback INT,
+    FOREIGN KEY (flashCardId) REFERENCES FlashCard (flashCardId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (learningInstanceId) REFERENCES LearningInstance (learningInstanceId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE LearningInstance(
@@ -54,7 +69,10 @@ CREATE TABLE LearningInstance(
     complete BOOLEAN,
     learningType VARCHAR(20),
     collectionStartIndex INT,
-    collectionEndIndex INT
+    collectionEndIndex INT,
+    FOREIGN KEY (collectionId) REFERENCES Collection (collectionId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE VIEW FlashCardsWithPriority AS SELECT
@@ -68,3 +86,5 @@ CREATE VIEW FlashCardsWithPriority AS SELECT
     FROM FlashCard LEFT JOIN FlashCardUse
     ON FlashCard.flashCardId = FlashCardUse.flashCardId AND NOT FlashCardUse.complete
     GROUP BY flashCardId;
+
+SET FOREIGN_KEY_CHECKS=1;
