@@ -1,0 +1,48 @@
+
+.verticalBar {
+    width: 120px;
+    border-radius: 5px 5px 5px 5px;
+    z-index: 0;
+}
+.graphItemTextContainer {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    min-height: 30px;
+}
+
+.barContainer {
+    padding: 10px;
+}
+
+.individualBarContainer {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+.barContainerFr {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    height: 150px;
+    width: fit-content;
+}
+
+.graphContainer {
+    border-color: var(--color-border-strong);
+    border-width: 1px;
+    border-radius: 6px;
+}
+
+.parentContainer {
+    display: flex;
+
+    justify-content: center;
+}
+
+.graphItemText {
+    padding: 5px;
+}
