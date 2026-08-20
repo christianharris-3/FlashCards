@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import {useEffect, useState} from "react";
 import FlashCardRow from "../components/FlashCardRow.jsx";
+import CreateFlashCard from "../components/CreateFlashCard.jsx";
 
 export default function ViewCollection() {
     const navigate = useNavigate();
@@ -21,8 +22,6 @@ export default function ViewCollection() {
     const [collectionData, setCollectionData] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(25);
-    const [newFlashCardFrontText, setNewFlashCardFrontText] = useState("");
-    const [newFlashCardBackText, setNewFlashCardBackText] = useState("");
 
     useEffect(() => {
         fetch(`/api/collections/${collectionId}`, {
@@ -50,21 +49,6 @@ export default function ViewCollection() {
         setReloadTrigger(x => x + 1)
     }
 
-    function handleCreateFlashCard() {
-        fetch("/api/flashcard", {
-            method: "POST",
-            headers: getHeadersJson(),
-            body: JSON.stringify({
-                collectionId: collectionId,
-                frontText: newFlashCardFrontText,
-                backText: newFlashCardBackText
-            })
-        }).then(r => {
-            if (validateResponse(r, navigate)) {
-                triggerReload()
-            }
-        })
-    }
 
 
     return (
@@ -80,22 +64,7 @@ export default function ViewCollection() {
                         }
                     </div>
                 </Paper>
-                <Paper style={{padding: "10px", paddingBottom: "20px"}}>
-                    <Typography sx={{margin: "10px"}} variant="h5">Add Flash Card</Typography>
-                    <div style={{display: "flex", gap: "20px", justifyContent: "center"}}>
-                        <TextField size="small"
-                                   label="English"
-                                   onChange={(e) => {
-                                       setNewFlashCardFrontText(e.target.value)
-                                   }}/>
-                        <TextField size="small"
-                                   label="Polish"
-                                   onChange={(e) => {
-                                       setNewFlashCardBackText(e.target.value)
-                                   }}/>
-                        <Button variant="outlined" onClick={handleCreateFlashCard}>Create</Button>
-                    </div>
-                </Paper>
+                <CreateFlashCard collectionId={collectionId} triggerReload={triggerReload}/>
                 <Paper style={{flexGrow: 1, padding: "20px"}}>
                     {collectionData !== null ?
                         <div>

@@ -15,6 +15,7 @@ import UploadSection from "../components/UploadSection.jsx";
 import {useEffect, useState} from "react";
 import EditableText from "../components/EditableText.jsx";
 import DeleteCollection from "../components/DeleteCollection.jsx";
+import ConfirmDialog from "../components/ConfirmDialog.jsx";
 
 export default function Collections() {
     const navigate = useNavigate();
@@ -68,6 +69,7 @@ export default function Collections() {
         }).then(r => {
             if (validateResponse(r, navigate)) {
                 row.collectionName = newCollectionName;
+                runTriggerDataReload()
                 return true;
             } else {
                 return false;
@@ -149,6 +151,7 @@ export default function Collections() {
                                             </TableCell>
                                             <TableCell sx={{width: "50px"}} align="center">
                                                 <DeleteCollection collectionId={row.collectionId}
+                                                                  collectionName={row.collectionName}
                                                                   triggerDataReload={runTriggerDataReload}/>
                                             </TableCell>
                                         </TableRow>
