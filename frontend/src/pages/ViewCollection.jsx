@@ -101,12 +101,13 @@ export default function ViewCollection() {
                         <div>
                             <div style={{width: "100%"}}>
                                 <TableContainer>
-                                    <Table className="mainTable">
-                                        <TableHead style={{tableLayout: "fixed"}}>
+                                    <Table className="mainTable" style={{tableLayout: "fixed"}}>
+                                        <TableHead>
                                             <TableRow className="titleRow">
                                                 <TableCell sx={{width: "60px"}}>Index</TableCell>
                                                 <TableCell sx={{width: "50%"}} align="center">English</TableCell>
                                                 <TableCell sx={{width: "50%"}} align="center">Polish</TableCell>
+                                                <TableCell sx={{width: "60px"}} align="center" style={{padding: "10px"}}>Delete</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody className="tableBody">

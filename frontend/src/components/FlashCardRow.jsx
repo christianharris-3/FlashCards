@@ -1,7 +1,9 @@
-import {TableCell, TableRow} from "@mui/material";
-import {getHeadersJson, validateResponse} from "../utils/utils.js";
+import {Button, CircularProgress, TableCell, TableRow} from "@mui/material";
+import {getHeaders, getHeadersJson, validateResponse} from "../utils/utils.js";
 import EditableText from "./EditableText.jsx";
 import {useNavigate} from "react-router-dom";
+import DeleteCollection from "./DeleteCollection.jsx";
+import {Delete} from "@mui/icons-material";
 
 export default function FlashCardRow({row, triggerReload, reloadKey}) {
     const navigate = useNavigate();
@@ -49,6 +51,17 @@ export default function FlashCardRow({row, triggerReload, reloadKey}) {
         })
     }
 
+    function deleteFlashCard() {
+        fetch(`/api/flashcard/${row.flashCardId}`, {
+            method: "DELETE",
+            headers: getHeaders()
+        }).then(r => {
+            if (validateResponse(r, navigate)) {
+                triggerReload();
+            }
+        })
+    }
+
 
     return (
         <TableRow hover key={`flashCardRow${row.collectionPosition}-${row.flashCardId}-${reloadKey}`}>
@@ -58,7 +71,7 @@ export default function FlashCardRow({row, triggerReload, reloadKey}) {
                 saveFunc={saveIndex}
                 htmlKey={`textInputIndex${row.collectionPosition}-${row.flashCardId}-${reloadKey}`}
             /></TableCell>
-            <TableCell size="small"><EditableText
+            <TableCell size="small" ><EditableText
                 defaultText={row.frontText}
                 row={row}
                 saveFunc={saveFrontText}
@@ -70,6 +83,12 @@ export default function FlashCardRow({row, triggerReload, reloadKey}) {
                 saveFunc={saveBackText}
                 htmlKey={`textInputBackText${row.collectionPosition}-${row.flashCardId}-${reloadKey}`}
             /></TableCell>
+            <TableCell align="center" style={{padding: 0}}>
+                <div style={{width: "fit-content", margin: "auto"}}>
+                    <Button onClick={deleteFlashCard} style={{width: "fit-content", minWidth: "fit-content"}}>
+                        <Delete color="error"/>
+                    </Button>
+                </div></TableCell>
         </TableRow>
     )
 }
