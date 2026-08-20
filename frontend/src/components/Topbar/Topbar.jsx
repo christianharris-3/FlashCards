@@ -20,6 +20,10 @@ export default function Topbar() {
         navigate("/profile");
     }
 
+    function titlePressed() {
+        navigate("/")
+    }
+
     function lifeLine() {
         fetch("/api/auth", {method: "GET", headers: getHeaders()}).then(
             r => {
@@ -46,7 +50,7 @@ export default function Topbar() {
                 <div style={{display: "flex", gap: "50px"}}>
                     <div style={{minWidth: "100px", display: "flex", gap: 12, height: "100%", alignItems: "center"}}>
                         <LogoBw width={50} height={20} homeOnClick={true}/>
-                        <span style={{fontWeight: "bold"}}>FlashCards</span>
+                        <span style={{fontWeight: "bold"}} onClick={titlePressed}>FlashCards</span>
                     </div>
                     <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
                         <Button style={{color: "white"}} onClick={()=>navigate("/profile")}>Profile</Button>

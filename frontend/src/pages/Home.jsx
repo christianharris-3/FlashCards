@@ -23,7 +23,24 @@ export default function Home() {
                     </Typography>
 
                     {loggedIn ?
-                        <div style={{margin: "20px"}}> </div> :
+                        <div style={{margin: "20px", display: "flex", justifyContent: "center", gap: "20px"}}>
+                            <Button variant="outlined"
+                                    style={{width: "130px"}}
+                                    onClick={() => {
+                                        navigate("/collections")
+                                    }}>
+                                Create+View Collections
+                            </Button>
+                            <Button variant="contained"
+                                    style={{width: "130px"}}
+                                    onClick={() => {
+                                        navigate("/learn")
+                                    }}>
+                                Learn
+                            </Button>
+
+
+                        </div> :
                         <div style={{margin: "20px"}}>
                             <Button variant="contained"
                                     style={{margin: "10px"}}
