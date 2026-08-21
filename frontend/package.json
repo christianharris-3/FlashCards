@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -20,7 +20,6 @@
     "react-dom": "^19.2.7",
     "react-dropzone": "^20.1.0",
     "react-router-dom": "^7.18.1",
-    "tailwind": "^4.0.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
