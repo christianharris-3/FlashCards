@@ -48,11 +48,11 @@ export default function Topbar() {
         <AppBar position="static" style={{height: 50}}>
             <div className="top-divider">
                 <div style={{display: "flex", gap: "50px"}}>
-                    <div style={{minWidth: "100px", display: "flex", gap: 12, height: "100%", alignItems: "center"}}>
+                    <div className="web-logo-container">
                         <LogoBw width={50} height={20} homeOnClick={true}/>
                         <span style={{fontWeight: "bold"}} onClick={titlePressed}>FlashCards</span>
                     </div>
-                    <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+                    <div style={{display: "flex", alignItems: "center", gap: "10px", flexGrow: 1}}>
                         <Button style={{color: "white"}} onClick={()=>navigate("/profile")}>Profile</Button>
                         <Button style={{color: "white"}} onClick={()=>navigate("/collections")}>Collections</Button>
                         <Button style={{color: "white"}} onClick={()=>navigate("/learn")}>Learn</Button>

@@ -44,7 +44,7 @@ export default function Login() {
     return (
         <div className="page">
             <div style={{paddingTop: "25vh"}}>
-                <Paper style={{width: "400px", margin: "auto", padding: "20px 50px", borderRadius: "12px"}}>
+                <Paper style={{maxWidth: "400px", margin: "auto", padding: "20px 50px", borderRadius: "12px"}}>
                     <form>
                         <Stack spacing={2}>
                             <Typography variant="h5">Login</Typography>

@@ -214,30 +214,29 @@ export default function LearnStartPage() {
 
     return (
         <div className="page">
-            <div style={{
-                textAlign: "center", maxWidth: "700px", margin: "auto",
-                padding: "40px", display: "flex", gap: "20px", flexDirection: "column"
-            }}>
+            <div className="page-items-container" style={{maxWidth: "700px"}}>
                 <Typography variant="h4">
                     Practise Collection
                 </Typography>
                 {collectionList === null?
                     <CircularProgress />:
-                    <FormControl variant="outlined" style={{width: "fit-content", margin: "auto", minWidth: "250px"}} aria-label="collectionSelection">
-                        <InputLabel id="collectionSelectionLabel">Collection</InputLabel>
-                        <Select value={collectionSelected}
-                                label="Collection"
-                                labelId="collectionSelectionLabel"
-                                onChange={handleChangeSelection}
-                                variant="outlined"
-                        >
-                            {collectionList.map((item) =>
-                                <MenuItem value={item.collectionId}>
-                                    {item.collectionName}
-                                </MenuItem>
-                            )}
-                        </Select>
-                    </FormControl>
+                    <div style={{display: "flex", justifyContent: "center"}}>
+                        <FormControl variant="outlined" style={{maxWidth: "250px", flexGrow: 1}} aria-label="collectionSelection">
+                            <InputLabel id="collectionSelectionLabel">Collection</InputLabel>
+                            <Select value={collectionSelected}
+                                    label="Collection"
+                                    labelId="collectionSelectionLabel"
+                                    onChange={handleChangeSelection}
+                                    variant="outlined"
+                            >
+                                {collectionList.map((item) =>
+                                    <MenuItem value={item.collectionId}>
+                                        {item.collectionName}
+                                    </MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                    </div>
                 }
                 <Paper style={{padding: "15px", display: "flex", flexDirection: "column", gap: "10px"}}>
                     <Typography variant="h5">

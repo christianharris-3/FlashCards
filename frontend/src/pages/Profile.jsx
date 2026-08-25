@@ -37,11 +37,11 @@ export default function Profile() {
     return (
         <div className="page">
             <div style={{paddingTop: "30px"}}>
-                <div style={{textAlign: "center", maxWidth: "800px", margin: "auto", padding: "40px"}}>
-                    <Paper style={{flexGrow: 1, display: "flex", padding: "30px"}}>
+                <div className="page-items-container">
+                    <Paper style={{flexGrow: 1, display: "flex", padding: "30px", flexWrap: "wrap", justifyContent: "center"}}>
                         <UserAvatar username={localStorage.getItem("username")} sx={{width: 200, height: 200, fontSize: 80, marginRight: "40px"}}/>
                         <Divider orientation="vertical" flexItem/>
-                        <div style={{padding: "30px"}}>
+                        <div style={{padding: "30px", flexBasis: "400px"}}>
                             <Typography variant="h3">Welcome, {localStorage.getItem("username")}</Typography>
                             <Typography variant="body">No, I'm not going to let you collection a profile picture, I haven't figured out how to store that yet.</Typography>
                             <br></br>

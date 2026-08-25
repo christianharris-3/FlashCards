@@ -28,7 +28,7 @@ export default function CreateFlashCard({collectionId, triggerReload}) {
     return (
         <Paper style={{padding: "10px", paddingBottom: "20px"}}>
             <Typography sx={{margin: "10px"}} variant="h5">Add Flash Card</Typography>
-            <div style={{display: "flex", gap: "20px", justifyContent: "center"}}>
+            <div style={{display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap"}}>
                 <TextField size="small"
                            label="English"
                            onChange={(e) => {

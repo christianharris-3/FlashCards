@@ -92,15 +92,7 @@ export default function Collections() {
 
     return (
         <div className="page">
-            <div style={{
-                textAlign: "center",
-                maxWidth: "800px",
-                margin: "auto",
-                padding: "40px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "20px"
-            }}>
+            <div className="page-items-container">
                 <Paper style={{padding: "10px"}}>
                     <Typography sx={{margin: "20px"}} variant="h5">Upload Your Collection</Typography>
                     <Typography variant="body" style={{marginTop: "10px"}}>
@@ -111,7 +103,7 @@ export default function Collections() {
                 </Paper>
                 <Paper style={{padding: "10px", paddingBottom: "20px"}}>
                     <Typography sx={{margin: "10px"}} variant="h5">Create New Collection</Typography>
-                    <div style={{display: "flex", gap: "20px", justifyContent: "center"}}>
+                    <div style={{display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap"}}>
                         <TextField size="small"
                                    label="Collection Name"
                                    onChange={(e) => {

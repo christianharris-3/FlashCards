@@ -29,12 +29,12 @@ export default function EditableText({defaultText, row, saveFunc, htmlKey}) {
 
 
     return (
-        <div style={{display: "flex", gap: "3px", height: "29px", marginLeft: "5px"}}>
+        <div style={{display: "flex", gap: "3px", marginLeft: "5px", flexWrap: "wrap", justifyContent: "center"}}>
             <TextField variant="standard"
                        key={htmlKey}
                        defaultValue={defaultText}
                        size="small"
-                       style={{flexGrow: 1, minWidth: "30px"}}
+                       style={{flexGrow: 1, minWidth: "30px", flexBasis: "40px"}}
                        onChange={(e) => {
                            textEdited(e, e.target.value)
                        }}
@@ -43,7 +43,7 @@ export default function EditableText({defaultText, row, saveFunc, htmlKey}) {
                        }}
             />
             {showSaveButton ?
-                <Button loading={saveButtonLoading} size="medium"
+                <Button loading={saveButtonLoading} size="medium" sx={{height: "29px"}}
                     onClick={(e) => {savePressed(e)
                 }}>Save</Button> : <></>
             }

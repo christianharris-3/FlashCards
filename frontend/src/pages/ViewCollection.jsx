@@ -53,7 +53,7 @@ export default function ViewCollection() {
 
     return (
         <div className="page">
-            <div style={{textAlign: "center", maxWidth: "800px", margin: "auto", padding: "40px", display: "flex", flexDirection: "column", gap: "20px"}}>
+            <div className="page-items-container">
                 <Paper style={{flexGrow: 1, padding: "30px"}}>
                     <div>
                         {collectionData !== null ?

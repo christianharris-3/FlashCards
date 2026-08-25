@@ -12,9 +12,9 @@ export default function Home() {
 
 
     return (
-        <div className="page">
+        <div className="page" >
             <div style={{paddingTop: "30px"}}>
-                <Paper style={{textAlign: "center", width: "800px", margin: "auto", padding: "40px"}}>
+                <Paper style={{textAlign: "center", maxWidth: "800px", margin: "auto", padding: "40px"}}>
                     <Typography variant="h2" style={{fontFamily: "Georgia", fontWeight: "bold", marginBottom: "30px"}}>
                         Flash Cards
                     </Typography>
