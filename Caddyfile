@@ -1,0 +1,7 @@
+http://localhost {
+    reverse_proxy frontend:80
+}
+
+http://flashcards.c-harris.uk {
+    reverse_proxy frontend:80
+}
