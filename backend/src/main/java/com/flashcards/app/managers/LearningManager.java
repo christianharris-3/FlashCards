@@ -5,6 +5,7 @@ import com.flashcards.app.models.dao.FlashCard;
 import com.flashcards.app.models.dao.FlashCardData;
 import com.flashcards.app.models.dao.FlashCardInLearningInstance;
 import com.flashcards.app.models.dao.LearningInstanceData;
+import com.flashcards.app.models.enums.FrontOfCard;
 import com.flashcards.app.models.enums.LearningType;
 
 import java.sql.Timestamp;
@@ -34,32 +35,49 @@ public class LearningManager {
         return learningDao.getLearningInstanceSize(collectionId, ignoreSeenToday);
     }
 
-    public long createLearningInstance(long collectionId, String learningType, int startIndex, int endIndex) {
+    public long createLearningInstance(long collectionId, String learningType, String frontOfCardString, int startIndex, int endIndex) {
 
         LearningType type = LearningType.valueOf(learningType.toUpperCase(Locale.ROOT));
         int limit = endIndex - startIndex;
 
         long learningInstanceId = learningDao.createLearningInstance(collectionId, learningType, startIndex, endIndex);
 
+        FrontOfCard frontOfCard = FrontOfCard.valueOf(frontOfCardString.toUpperCase(Locale.ROOT));
+        boolean frontFirst = true;
+        boolean randomizeFrontFirst = false;
+        if (frontOfCard == FrontOfCard.BACK) {
+            frontFirst = false;
+        } else if (frontOfCard == FrontOfCard.RANDOM) {
+            randomizeFrontFirst = true;
+        }
+
         switch (type) {
             case DAILY -> learningDao.populateLearningInstanceDaily(
                     learningInstanceId,
                     collectionId,
+                    frontFirst,
+                    randomizeFrontFirst,
                     limit,
                     startIndex);
             case PRIORITY -> learningDao.populateLearningInstancePriority(
                     learningInstanceId,
                     collectionId,
+                    frontFirst,
+                    randomizeFrontFirst,
                     limit,
                     startIndex);
             case INORDER -> learningDao.populateLearningInstanceInOrder(
                     learningInstanceId,
                     collectionId,
+                    frontFirst,
+                    randomizeFrontFirst,
                     limit,
                     startIndex);
             case RANDOM -> learningDao.populateLearningInstanceRandom(
                     learningInstanceId,
                     collectionId,
+                    frontFirst,
+                    randomizeFrontFirst,
                     limit,
                     startIndex);
         }

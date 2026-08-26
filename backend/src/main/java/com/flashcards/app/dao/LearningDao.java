@@ -47,6 +47,7 @@ public interface LearningDao {
                 FlashCardUse.learningInstancePosition as positionIndex,
                 FlashCard.frontText as frontText,
                 FlashCard.backText as backText,
+                FlashCardUse.frontFirst as frontFirst,
                 FlashCardUse.complete as complete
             FROM FlashCardUse LEFT JOIN FlashCard
             ON FlashCardUse.flashCardId = FlashCard.flashCardId
@@ -57,57 +58,122 @@ public interface LearningDao {
 
     @SqlUpdate("""
             INSERT INTO FlashCardUse (
-                flashCardId, learningInstanceId, learningInstancePosition, complete
+                flashCardId, learningInstanceId, learningInstancePosition, frontFirst, complete
             )
-            SELECT flashCardId, :learningInstanceId, ROW_NUMBER() OVER (ORDER BY priority), false
+            WITH FlashCardsWithFrontFirst as (
+                SELECT
+                    flashCardId,
+                    (:frontFirst AND NOT :randomizeFrontFirst) OR (ROUND(RAND()) AND :randomizeFrontFirst) as frontFirst
+                FROM FlashCardsWithPriority
+                WHERE FlashCardsWithPriority.frontFirst
+            )
+            SELECT FlashCardsWithPriority.flashCardId,
+                   :learningInstanceId,
+                   ROW_NUMBER() OVER (ORDER BY priority),
+                   FlashCardsWithFrontFirst.frontFirst,
+                   false
             FROM FlashCardsWithPriority
-            WHERE collectionID = :collectionId AND NOT seenToday
+            LEFT JOIN FlashCardsWithFrontFirst
+            ON FlashCardsWithPriority.flashCardId = FlashCardsWithFrontFirst.flashCardId
+            WHERE collectionID = :collectionId
+              AND FlashCardsWithPriority.frontFirst = FlashCardsWithFrontFirst.frontFirst
+              AND NOT seenToday
             LIMIT :limit OFFSET :offset;
             """)
     void populateLearningInstanceDaily(@Bind("learningInstanceId") long learningInstanceId,
                                        @Bind("collectionId") long collectionId,
+                                       @Bind("frontFirst") boolean frontFirst,
+                                       @Bind("randomizeFrontFirst") boolean randomizeFrontFirst,
                                        @Bind("limit") int limit,
                                        @Bind("offset") int offset);
 
     @SqlUpdate("""
             INSERT INTO FlashCardUse (
-                flashCardId, learningInstanceId, learningInstancePosition, complete
+                flashCardId, learningInstanceId, learningInstancePosition, frontFirst, complete
             )
-            SELECT flashCardId, :learningInstanceId, ROW_NUMBER() OVER (ORDER BY priority), false
+            WITH FlashCardsWithFrontFirst as (
+                SELECT
+                    flashCardId,
+                    (:frontFirst AND NOT :randomizeFrontFirst) OR (ROUND(RAND()) AND :randomizeFrontFirst) as frontFirst
+                FROM FlashCardsWithPriority
+                WHERE FlashCardsWithPriority.frontFirst
+            )
+            SELECT FlashCardsWithPriority.flashCardId,
+                   :learningInstanceId,
+                   ROW_NUMBER() OVER (ORDER BY priority),
+                   FlashCardsWithFrontFirst.frontFirst,
+                   false
             FROM FlashCardsWithPriority
-            WHERE collectionId = :collectionId
+            LEFT JOIN FlashCardsWithFrontFirst
+            ON FlashCardsWithPriority.flashCardId = FlashCardsWithFrontFirst.flashCardId
+            WHERE collectionID = :collectionId
+              AND FlashCardsWithPriority.frontFirst = FlashCardsWithFrontFirst.frontFirst
             LIMIT :limit OFFSET :offset;
             """)
     void populateLearningInstancePriority(@Bind("learningInstanceId") long learningInstanceId,
                                           @Bind("collectionId") long collectionId,
+                                          @Bind("frontFirst") boolean frontFirst,
+                                          @Bind("randomizeFrontFirst") boolean randomizeFrontFirst,
                                           @Bind("limit") int limit,
                                           @Bind("offset") int offset);
 
     @SqlUpdate("""
             INSERT INTO FlashCardUse (
-                flashCardId, learningInstanceId, learningInstancePosition, complete
+                flashCardId, learningInstanceId, learningInstancePosition, frontFirst, complete
             )
-            SELECT flashCardId, :learningInstanceId, ROW_NUMBER() OVER (ORDER BY collectionPosition), false
+            WITH FlashCardsWithFrontFirst as (
+                SELECT
+                    flashCardId,
+                    (:frontFirst AND NOT :randomizeFrontFirst) OR (ROUND(RAND()) AND :randomizeFrontFirst) as frontFirst
+                FROM FlashCardsWithPriority
+                WHERE FlashCardsWithPriority.frontFirst
+            )
+            SELECT FlashCardsWithPriority.flashCardId,
+                   :learningInstanceId,
+                   ROW_NUMBER() OVER (ORDER BY FlashCardsWithPriority.collectionPosition),
+                   FlashCardsWithFrontFirst.frontFirst,
+                   false
             FROM FlashCardsWithPriority
+            LEFT JOIN FlashCardsWithFrontFirst
+            ON FlashCardsWithPriority.flashCardId = FlashCardsWithFrontFirst.flashCardId
             WHERE collectionID = :collectionId
+              AND FlashCardsWithPriority.frontFirst = FlashCardsWithFrontFirst.frontFirst
             LIMIT :limit OFFSET :offset;
             """)
     void populateLearningInstanceInOrder(@Bind("learningInstanceId") long learningInstanceId,
                                          @Bind("collectionId") long collectionId,
+                                         @Bind("frontFirst") boolean frontFirst,
+                                         @Bind("randomizeFrontFirst") boolean randomizeFrontFirst,
                                          @Bind("limit") int limit,
                                          @Bind("offset") int offset);
 
     @SqlUpdate("""
             INSERT INTO FlashCardUse (
-                flashCardId, learningInstanceId, learningInstancePosition, complete
+                flashCardId, learningInstanceId, learningInstancePosition, frontFirst, complete
             )
-            SELECT flashCardId, :learningInstanceId, ROW_NUMBER() OVER (ORDER BY RAND()), false
+            WITH FlashCardsWithFrontFirst as (
+                SELECT
+                    flashCardId,
+                    (:frontFirst AND NOT :randomizeFrontFirst) OR (ROUND(RAND()) AND :randomizeFrontFirst) as frontFirst
+                FROM FlashCardsWithPriority
+                WHERE FlashCardsWithPriority.frontFirst
+            )
+            SELECT FlashCardsWithPriority.flashCardId,
+                   :learningInstanceId,
+                   ROW_NUMBER() OVER (ORDER BY RAND()),
+                   FlashCardsWithFrontFirst.frontFirst,
+                   false
             FROM FlashCardsWithPriority
+            LEFT JOIN FlashCardsWithFrontFirst
+            ON FlashCardsWithPriority.flashCardId = FlashCardsWithFrontFirst.flashCardId
             WHERE collectionID = :collectionId
+              AND FlashCardsWithPriority.frontFirst = FlashCardsWithFrontFirst.frontFirst
             LIMIT :limit OFFSET :offset;
             """)
     void populateLearningInstanceRandom(@Bind("learningInstanceId") long learningInstanceId,
                                         @Bind("collectionId") long collectionId,
+                                        @Bind("frontFirst") boolean frontFirst,
+                                        @Bind("randomizeFrontFirst") boolean randomizeFrontFirst,
                                         @Bind("limit") int limit,
                                         @Bind("offset") int offset);
 
@@ -128,6 +194,7 @@ public interface LearningDao {
             SELECT COUNT(*)
             FROM FlashCardsWithPriority
             WHERE collectionId = :collectionId
+            AND frontFirst
             AND (NOT seenToday OR NOT :ignoreSeenToday);
             """)
     int getLearningInstanceSize(@Bind("collectionId") long collectionId,

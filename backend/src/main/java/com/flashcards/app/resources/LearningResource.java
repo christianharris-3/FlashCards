@@ -86,48 +86,11 @@ public class LearningResource {
                                            @NotNull CreateLearningInstanceRequest request
     ) {
         userValidationManager.validateUserHasCollection(user, collectionId);
-        long learningInstanceId = learningManager.createLearningInstance(collectionId, learningType, request.getStartIndex(), request.getEndIndex());
+        long learningInstanceId = learningManager.createLearningInstance(collectionId, learningType,
+                request.getFrontOfCard(), request.getStartIndex(), request.getEndIndex()
+        );
         return Response.accepted(
                 new CreateLearningInstanceResponse(learningInstanceId)
         ).build();
     }
-
-//    @POST
-//    @Path("/create/priority/{collectionId}")
-//    public Response createLearningInstancePriority(@Auth User user,
-//                                                   @PathParam("collectionId") long collectionId,
-//                                                   @NotNull CreateLearningInstanceRequest request
-//    ) {
-//        userValidationManager.validateUserHasCollection(user, collectionId);
-//        long learningInstanceId = learningManager.createLearningInstancePriority(collectionId, request.getStartIndex(), request.getEndIndex());
-//        return Response.accepted(
-//                new CreateLearningInstanceResponse(learningInstanceId)
-//        ).build();
-//    }
-//
-//    @POST
-//    @Path("/create/inorder/{collectionId}")
-//    public Response createLearningInstanceInOrder(@Auth User user,
-//                                                   @PathParam("collectionId") long collectionId,
-//                                                   @NotNull CreateLearningInstanceRequest request
-//    ) {
-//        userValidationManager.validateUserHasCollection(user, collectionId);
-//        long learningInstanceId = learningManager.createLearningInstanceInOrder(collectionId, request.getStartIndex(), request.getEndIndex());
-//        return Response.accepted(
-//                new CreateLearningInstanceResponse(learningInstanceId)
-//        ).build();
-//    }
-//
-//    @POST
-//    @Path("/create/random/{collectionId}")
-//    public Response createLearningInstanceRandom(@Auth User user,
-//                                                   @PathParam("collectionId") long collectionId,
-//                                                   @NotNull CreateLearningInstanceRequest request
-//    ) {
-//        userValidationManager.validateUserHasCollection(user, collectionId);
-//        long learningInstanceId = learningManager.createLearningInstanceRandom(collectionId, request.getStartIndex(), request.getEndIndex());
-//        return Response.accepted(
-//                new CreateLearningInstanceResponse(learningInstanceId)
-//        ).build();
-//    }
 }

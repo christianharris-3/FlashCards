@@ -27,6 +27,9 @@ export default function LearnStartPage() {
         "Random": "All flash cards in the collection, in a random order."
     }
 
+    const sideTypes = ["English", "Polish", "Random"]
+    const [selectedSideType, setSelectedSideType] = useState(sideTypes[0]);
+
     const [collectionList, setCollectionList] = useState(null);
     const [collectionSelected, setCollectionSelected] = useState(null);
 
@@ -64,16 +67,23 @@ export default function LearnStartPage() {
     }, []);
 
     function getLearningApiParams() {
+        let params = {
+            startIndex: 0,
+            endIndex: rangeSliderValue[0]
+        };
         if (showRangeUi) {
-            return {
+            params = {
                 startIndex: rangeSliderValue[0],
                 endIndex: rangeSliderValue[1]
             }
         }
-        return {
-            startIndex: 0,
-            endIndex: rangeSliderValue[0]
-        };
+        params.frontOfCard = (() => {switch (selectedSideType) {
+            case "English": return "front";
+            case "Polish": return "back";
+            case "Random": return "random";
+            default: return "front";
+        }})();
+        return params;
     }
     function getLearningApiUrl() {
         return `/api/learn/create/${selectedLearnType.toLowerCase().replace(" ", "")}/${collectionSelected}`
@@ -152,14 +162,14 @@ export default function LearnStartPage() {
         if (event.target.value === "All") {
             setRangeSliderValue([totalCards, rangeSliderValue[1]]);
         } else if (event.target.value !== "Custom"){
-            setRangeSliderValue([parseInt(event.target.value), rangeSliderValue[1]]);
+            setRangeSliderValue([Math.min(parseInt(event.target.value), totalCards), rangeSliderValue[1]]);
         }
     }
 
     function handleChangeRangeSlider(event, value, activeThumb) {
         if (numCards === "Custom") {
             if (value[1] - value[0] < rangeMinDistance) {
-                clampRangeSlider(value, activeThumb, rangeMinDistance)
+                clampRangeSliderDefault(value, activeThumb, rangeMinDistance)
             } else {
                 setRangeSliderValue(value);
             }
@@ -182,8 +192,8 @@ export default function LearnStartPage() {
             value = [value[1], value[0]]
         }
         if (activeThumb === 0) {
-            const clamped = Math.min(value[0], totalCardsVal - rangeDiff);
-            setRangeSliderValue([clamped, clamped + rangeDiff]);
+            const clamped = Math.max(Math.min(value[0], totalCardsVal - rangeDiff), 0);
+            setRangeSliderValue([clamped, clamped + Math.min(rangeDiff, totalCardsVal)]);
         } else {
             const clamped = Math.max(value[1], rangeDiff);
             setRangeSliderValue([clamped - rangeDiff, clamped]);
@@ -246,9 +256,23 @@ export default function LearnStartPage() {
                               selectedValue={selectedLearnType}
                               setSelectedValue={setLearningType}
                     />
-                    <Typography variant="body">
-                        {learnDescriptions[selectedLearnType]}
+                    {totalCards === 0 && selectedLearnType === "Daily" ?
+                        <Typography variant="body">
+                            All daily cards used up, well done!
+                        </Typography> :
+                        <Typography variant="body">
+                            {learnDescriptions[selectedLearnType]}
+                        </Typography>
+                    }
+                </Paper>
+                <Paper style={{padding: "15px", display: "flex", flexDirection: "column", gap: "10px"}}>
+                    <Typography variant="h5">
+                        Front of Card
                     </Typography>
+                    <Selector items={sideTypes}
+                              selectedValue={selectedSideType}
+                              setSelectedValue={setSelectedSideType}
+                    />
                 </Paper>
                 <Paper style={{padding: "15px"}}>
                     <Typography variant="h5">
@@ -288,7 +312,7 @@ export default function LearnStartPage() {
                                 max={totalCards}
                                 marks={rangeSliderMarks}
                                 disableSwap
-                                disabled={rangeSliderDisabled}
+                                disabled={rangeSliderDisabled || totalCards === 0}
                         />
                     </div>:
                     <div>
@@ -321,7 +345,7 @@ export default function LearnStartPage() {
                                 max={totalCards}
                                 marks={rangeSliderMarks}
                                 disableSwap
-                                disabled={rangeSliderDisabled}
+                                disabled={rangeSliderDisabled || totalCards === 0}
                         />
                     </div>
                 }

@@ -9,4 +9,6 @@ public class CreateLearningInstanceRequest {
     private int startIndex = 0;
     @NotNull
     private int endIndex = 10000;
+    @NotNull
+    private String frontOfCard;
 }

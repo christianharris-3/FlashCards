@@ -49,6 +49,7 @@ CREATE TABLE FlashCardUse(
     flashCardId BIGINT NOT NULL,
     learningInstanceId BIGINT NOT NULL,
     learningInstancePosition INT NOT NULL,
+    frontFirst BOOLEAN NOT NULL,
     complete BOOLEAN NOT NULL,
     timestamp TIMESTAMP,
     timeTakenMs INT,
@@ -82,9 +83,12 @@ CREATE VIEW FlashCardsWithPriority AS SELECT
         FlashCard.frontText as frontText,
         FlashCard.backText as backText,
         COALESCE(SUM(FlashCardUse.userFeedback), 0) as priority,
-        COALESCE(MAX(DATE(FlashCardUse.timestamp)) = CURDATE(), false) as seenToday
-    FROM FlashCard LEFT JOIN FlashCardUse
-    ON FlashCard.flashCardId = FlashCardUse.flashCardId AND NOT FlashCardUse.complete
-    GROUP BY flashCardId;
+        COALESCE(MAX(DATE(FlashCardUse.timestamp)) = CURDATE(), false) as seenToday,
+        FrontFirstPair.frontFirst as frontFirst
+    FROM FlashCard CROSS JOIN (SELECT TRUE AS frontFirst UNION SELECT False) FrontFirstPair
+    LEFT JOIN FlashCardUse
+    ON FlashCard.flashCardId = FlashCardUse.flashCardId
+        AND FrontFirstPair.frontFirst = FlashCardUse.frontFirst
+    GROUP BY FlashCard.flashCardId, FrontFirstPair.frontFirst;
 
 SET FOREIGN_KEY_CHECKS=1;

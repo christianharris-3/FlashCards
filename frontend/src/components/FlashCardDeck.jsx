@@ -14,14 +14,14 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
 
     function nextFlashCard() {
         let newIndex = currentFlashCardIndex + 1;
-        setCardFlipped(false);
-
         if (flashCardData && newIndex >= flashCardData.length) {
+
             deckFinished()
             return
         }
-
-        if (cardFlipped) {
+        let newFlipped = !flashCardData[newIndex].frontFirst;
+        setCardFlipped(newFlipped);
+        if (newFlipped !== cardFlipped) {
             setTimeout(() => {
                 setCurrentFlashCard(flashCardData[newIndex]);
                 setCurrentFlashCardIndex(newIndex);
@@ -65,8 +65,10 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
             }
             setCurrentFlashCard(flashCardData[newIndex]);
             setCurrentFlashCardIndex(newIndex);
+            setCardFlipped(!flashCardData[newIndex].frontFirst)
         }
     }, [flashCardData]);
+
 
     return (
         <div style={{width: "350px", margin: "auto"}}>
@@ -76,7 +78,7 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
                     <div style={{display: "flex", padding: "10px", gap: "20px"}}>
                         <Typography variant="h6">{currentFlashCardIndex+1}/{flashCardData.length}</Typography>
                         <Slider min={0}
-                                max={flashCardData.length}
+                                max={flashCardData.length-1}
                                 value={currentFlashCardIndex}
                                 color="primary"
                                 disabledSwap={true}/>
