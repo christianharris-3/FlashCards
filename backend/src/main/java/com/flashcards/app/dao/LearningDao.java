@@ -1,5 +1,6 @@
 package com.flashcards.app.dao;
 
+import com.flashcards.app.models.dao.ContinueLearningData;
 import com.flashcards.app.models.dao.FlashCardInLearningInstance;
 import com.flashcards.app.models.dao.LearningInstanceData;
 import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
@@ -224,4 +225,28 @@ public interface LearningDao {
             GROUP BY LearningInstance.learningInstanceId;
             """)
     Optional<LearningInstanceData> getLearningInstanceData(@Bind("learningInstanceId") long learningInstanceId);
+
+    @RegisterBeanMapper(ContinueLearningData.class)
+    @SqlQuery("""
+            SELECT * FROM (
+                SELECT
+                    MAX(Collection.collectionId) as collectionId,
+                    MAX(Collection.collectionName) as collectionName,
+                    LearningInstance.learningInstanceId as learningInstanceId,
+                    LearningInstance.startedTimestamp as startedTimestamp,
+                    LearningInstance.learningType as learningType,
+                    COUNT(*) AS totalCards,
+                    SUM(FlashCardUse.complete) as cardsDone
+                FROM Collection LEFT JOIN LearningInstance
+                ON Collection.collectionId = LearningInstance.collectionId
+                LEFT JOIN FlashCardUse
+                ON LearningInstance.learningInstanceId = FlashCardUse.learningInstanceId
+                WHERE Collection.userId = :userId
+                GROUP BY LearningInstanceId
+                ORDER BY startedTimestamp DESC
+            ) ContinueLearningData
+            WHERE ContinueLearningData.cardsDone < ContinueLearningData.totalCards
+            LIMIT 10;
+            """)
+    List<ContinueLearningData> getContinueLearningItems(@Bind("userId") long userId);
 }

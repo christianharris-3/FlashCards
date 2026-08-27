@@ -3,6 +3,7 @@ package com.flashcards.app.resources;
 import com.flashcards.app.managers.LearningManager;
 import com.flashcards.app.managers.UserValidationManager;
 import com.flashcards.app.models.User;
+import com.flashcards.app.models.dao.ContinueLearningData;
 import com.flashcards.app.models.dao.FlashCardData;
 import com.flashcards.app.models.dao.FlashCardInLearningInstance;
 import com.flashcards.app.models.dao.LearningInstanceData;
@@ -92,5 +93,11 @@ public class LearningResource {
         return Response.accepted(
                 new CreateLearningInstanceResponse(learningInstanceId)
         ).build();
+    }
+
+    @GET
+    public Response getContinueLearningItems(@Auth User user) {
+        List<ContinueLearningData> continueLearningDataList = learningManager.getContinueLearningItems(user.getUserId());
+        return Response.accepted(continueLearningDataList).build();
     }
 }

@@ -1,20 +1,39 @@
 import {useNavigate} from "react-router-dom";
 import {Alert, Button, Chip, CircularProgress, Paper, Typography} from "@mui/material";
+import {useEffect, useState} from "react";
+import {getHeaders, validateResponse} from "../utils/utils.js";
+import ContinueLearningRow from "../components/ContinueLearningRow.jsx";
 
 export default function Home() {
     const navigate = useNavigate();
     let loggedIn = false;
+
+    const [continueLearningData, setContinueLearningData] = useState(null);
 
 
     if (localStorage.getItem("loggedIn") === "true") {
         loggedIn = true;
     }
 
+    useEffect(() => {
+        fetch("/api/learn", {
+            method: "GET",
+            headers: getHeaders()
+        }).then(r => {
+            if (validateResponse(r, navigate)) {
+                r.json().then(json => {
+                    setContinueLearningData(json);
+                    console.log(json)
+                })
+            }
+        })
+    }, []);
+
 
     return (
         <div className="page" >
-            <div style={{paddingTop: "30px"}}>
-                <Paper style={{textAlign: "center", maxWidth: "800px", margin: "auto", padding: "40px"}}>
+            <div className="page-items-container">
+                <Paper style={{textAlign: "center", maxWidth: "800px", padding: "40px"}}>
                     <Typography variant="h2" style={{fontFamily: "Georgia", fontWeight: "bold", marginBottom: "30px"}}>
                         Flash Cards
                     </Typography>
@@ -56,6 +75,18 @@ export default function Home() {
                                     }}>
                                 Register
                             </Button>
+                        </div>
+                    }
+                </Paper>
+                <Paper style={{padding: "20px"}}>
+                    <Typography variant="h4" style={{paddingBottom: "10px"}}>
+                        Continue
+                    </Typography>
+                    {continueLearningData === null ?
+                        <CircularProgress /> :
+                        <div style={{display: "flex", gap: "10px", flexDirection: "column"}}>
+                            {continueLearningData.map((item) =>
+                            <ContinueLearningRow continueLearningDataItem={item}/>)}
                         </div>
                     }
                 </Paper>

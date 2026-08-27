@@ -1,10 +1,7 @@
 package com.flashcards.app.managers;
 
 import com.flashcards.app.dao.LearningDao;
-import com.flashcards.app.models.dao.FlashCard;
-import com.flashcards.app.models.dao.FlashCardData;
-import com.flashcards.app.models.dao.FlashCardInLearningInstance;
-import com.flashcards.app.models.dao.LearningInstanceData;
+import com.flashcards.app.models.dao.*;
 import com.flashcards.app.models.enums.FrontOfCard;
 import com.flashcards.app.models.enums.LearningType;
 
@@ -86,5 +83,9 @@ public class LearningManager {
 
     public Optional<LearningInstanceData> getLearningInstanceData(long learningInstanceId) {
         return learningDao.getLearningInstanceData(learningInstanceId);
+    }
+
+    public List<ContinueLearningData> getContinueLearningItems(long userId) {
+        return learningDao.getContinueLearningItems(userId);
     }
 }

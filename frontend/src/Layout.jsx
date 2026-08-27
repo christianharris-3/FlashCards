@@ -27,7 +27,7 @@ export default function Layout() {
             background: {
                 default: '#ffffff',
                 paper: '#f7f7f7',
-            },
+            }
         },
         // components: {
         //     MuiButtonBase: {

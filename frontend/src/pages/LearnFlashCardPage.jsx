@@ -25,6 +25,8 @@ export default function LearnFlashCardPage() {
                 r.json().then(json => {
                     setCollectionData(json)
                 })
+            } else {
+                navigate("/")
             }
         })
     }, []);
@@ -40,6 +42,8 @@ export default function LearnFlashCardPage() {
                         setCompleteStats(json)
                         console.log("finished Data", json)
                     })
+                } else {
+                    navigate("/")
                 }
             })
         }
