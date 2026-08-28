@@ -10,12 +10,12 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
     const [currentFlashCard, setCurrentFlashCard] = useState(null);
     const [currentFlashCardIndex, setCurrentFlashCardIndex] = useState(0);
     const [prevSubmitTimestamp, setPrevSubmitTimestamp] = useState(new Date());
+    const [clueLetters, setClueLetters] = useState(new Set());
 
 
     function nextFlashCard() {
         let newIndex = currentFlashCardIndex + 1;
         if (flashCardData && newIndex >= flashCardData.length) {
-
             deckFinished()
             return
         }
@@ -36,6 +36,7 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
 
         const timestamp = new Date();
         const timeTakenMs = Math.min(timestamp - prevSubmitTimestamp, 20000);
+        setClueLetters(new Set());
 
         fetch(`/api/learn/log-flashcard-use/${currentFlashCard.flashCardUseId}`, {
             method: "POST",
@@ -51,6 +52,48 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
                 nextFlashCard();
             }
         })
+    }
+
+    function getClue() {
+        let len = currentFlashCard.frontText.length;
+        if (currentFlashCard.frontFirst) {
+            len = currentFlashCard.backText.length;
+        }
+        if (clueLetters.size < len) {
+            let ran = Math.floor(Math.random()*len)
+            while (clueLetters.has(ran)) {
+                ran = Math.floor(Math.random()*len)
+            }
+            setClueLetters(oldLetters => {
+                let letters = new Set(oldLetters);
+                letters.add(ran);
+                return letters;
+            })
+        }
+        if (currentFlashCard.frontFirst !== cardFlipped) {
+            setCardFlipped(!cardFlipped)
+        }
+    }
+
+    function revealAnswer() {
+        setClueLetters(new Set());
+    }
+
+    function getText(isFront) {
+        let text = isFront ? currentFlashCard.frontText : currentFlashCard.backText;
+
+        if (isFront === currentFlashCard.frontFirst || clueLetters.size === 0) {
+            return text;
+        }
+        let newText = ""
+        for (let i = 0; i<text.length; i++) {
+            if (clueLetters.has(i)) {
+                newText = newText.concat(text[i])
+            } else {
+                newText = newText.concat("_")
+            }
+        }
+        return newText
     }
 
     useEffect(() => {
@@ -69,41 +112,60 @@ export default function FlashCardDeck({flashCardData, deckFinished}) {
         }
     }, [flashCardData]);
 
+    if (currentFlashCard === null) {
+        return (
+            <div style={{width: "350px", margin: "auto"}}>
+                <div><CircularProgress /></div>
+            </div>
+        )
+    }
+
+    let frontText = getText(true);
+    let backText = getText(false);
 
     return (
         <div style={{width: "350px", margin: "auto"}}>
-            {currentFlashCard === null ?
-                <div><CircularProgress /></div>:
-                <div>
-                    <div style={{display: "flex", padding: "10px", gap: "20px"}}>
-                        <Typography variant="h6">{currentFlashCardIndex+1}/{flashCardData.length}</Typography>
-                        <Slider min={0}
-                                max={flashCardData.length-1}
-                                value={currentFlashCardIndex}
-                                color="primary"
-                                disabledSwap={true}/>
-                    </div>
-                    <FlashCard frontText={currentFlashCard.frontText}
-                               backText={currentFlashCard.backText}
-                               cardFlipped={cardFlipped}
-                               setCardFlipped={setCardFlipped}
-                    />
-                    <div style={{padding: 30, display: "flex", gap: "20px", justifyContent: "center"}}>
-                        <Button variant="contained"
-                                color="primary"
-                                onClick={() => submitFlashCard(1)}
-                        >Good</Button>
-                        <Button variant="contained"
-                                color="info"
-                                onClick={() => submitFlashCard(0)}
-                        >Ok</Button>
-                        <Button variant="contained"
-                                color="error"
-                                onClick={() => submitFlashCard(-1)}
-                        >Bad</Button>
-                    </div>
+            <div>
+                <div style={{display: "flex", padding: "10px", gap: "20px"}}>
+                    <Typography variant="h6">{currentFlashCardIndex+1}/{flashCardData.length}</Typography>
+                    <Slider min={0}
+                            max={flashCardData.length-1}
+                            value={currentFlashCardIndex}
+                            color="primary"
+                            disabledSwap={true}/>
                 </div>
-            }
+                <FlashCard frontText={frontText}
+                           backText={backText}
+                           cardFlipped={cardFlipped}
+                           setCardFlipped={setCardFlipped}
+                />
+                <div style={{padding: 30, display: "flex", gap: "20px", justifyContent: "center"}}>
+                    <Button variant="contained"
+                            color="primary"
+                            onClick={() => submitFlashCard(1)}
+                            disabled={clueLetters.size > 0}
+                    >Good</Button>
+                    <Button variant="contained"
+                            color="info"
+                            onClick={() => submitFlashCard(0)}
+                    >Ok</Button>
+                    <Button variant="contained"
+                            color="error"
+                            onClick={() => submitFlashCard(-1)}
+                    >Bad</Button>
+                </div>
+                <div style={{display: "flex", justifyContent: "center", gap: "10px"}}>
+                    <Button variant="outlined"
+                            color="info"
+                            onClick={getClue}
+                    >Clue</Button>
+                    {/*{clueLetters.size !== 0 &&*/}
+                    {/*    <Button variant="outlined"*/}
+                    {/*            onClick={revealAnswer}*/}
+                    {/*    >Reveal</Button>*/}
+                    {/*}*/}
+                </div>
+            </div>
         </div>
     )
 }

@@ -57,8 +57,6 @@ export default function Home() {
                                     }}>
                                 Learn
                             </Button>
-
-
                         </div> :
                         <div style={{margin: "20px"}}>
                             <Button variant="contained"
