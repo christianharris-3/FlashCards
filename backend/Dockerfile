@@ -15,7 +15,7 @@ WORKDIR /app
 COPY --from=build /app/target/FlashCards-*.jar app.jar
 
 COPY src/main/resources/config.yml config.yml
-COPY .env .env
+#COPY .env .env
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar", "server", "config.yml"]
