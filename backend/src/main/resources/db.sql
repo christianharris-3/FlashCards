@@ -82,7 +82,7 @@ CREATE VIEW FlashCardsWithPriority AS SELECT
         FlashCard.collectionPosition as collectionPosition,
         FlashCard.frontText as frontText,
         FlashCard.backText as backText,
-        COALESCE(SUM(FlashCardUse.userFeedback), 0) as priority,
+        COALESCE(SUM(FlashCardUse.userFeedback / (LOG((NOW() - FlashCardUse.timestamp) / (24 * 60 * 60 * 1000)))), 0) as priority,
         COALESCE(MAX(DATE(FlashCardUse.timestamp)) = CURDATE(), false) as seenToday,
         FrontFirstPair.frontFirst as frontFirst
     FROM FlashCard CROSS JOIN (SELECT TRUE AS frontFirst UNION SELECT False) FrontFirstPair
