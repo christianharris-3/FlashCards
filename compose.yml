@@ -29,12 +29,12 @@ services:
       - caddy_config:/config
     restart: unless-stopped
 
-#  cloudflared:
-#    image: cloudflare/cloudflared:latest
-#    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
-#    depends_on:
-#      - caddy
-#    restart: unless-stopped
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - caddy
+    restart: unless-stopped
 
 volumes:
   caddy_data:
