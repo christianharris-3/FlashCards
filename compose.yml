@@ -3,8 +3,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    env_file:
-      - ./backend/.env
+#    env_file:
+#      - ./backend/.env
     expose:
       - "8080"
     restart: unless-stopped
