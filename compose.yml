@@ -1,5 +1,6 @@
 services:
   backend:
+    image: ghcr.io/christianharris-3/flashcards-backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -10,6 +11,7 @@ services:
     restart: unless-stopped
 
   frontend:
+    image: ghcr.io/christianharris-3/flashcards-frontend:latest
     build:
       context: ./frontend
       dockerfile: Dockerfile
